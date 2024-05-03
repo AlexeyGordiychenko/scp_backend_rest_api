@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  title: "RP Flask REST API"
+  description: "An API for s21 backend project 2"
+  version: "1.0.0"
+
+servers:
+  - url: "/api/v1"
+
+components:
+  schemas:
+    Client:
+      type: "object"
+      required:
+        - client_name
+        - client_surname
+        - birthday
+        - gender
+        - address_country
+        - address_city
+        - address_street
+      properties:
+        client_name:
+          type: "string"
+        client_surname:
+          type: "string"
+        birthday:
+          type: "string"
+          format: "date"
+        gender:
+          type: "string"
+        address_country:
+          type: "string"
+        address_city:
+          type: "string"
+        address_street:
+          type: "string"
+
+paths:
+  /clients:
+    get:
+      operationId: "clients.read_all"
+      tags:
+        - "Clients"
+      summary: "Read the list of clients"
+      responses:
+        "200":
+          description: "Successfully read clients list"
+    post:
+      operationId: "clients.create"
+      tags:
+        - "Clients"
+      summary: "Create a client"
+      requestBody:
+        x-body-name: "client"
+        description: "A client to create"
+        required: True
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Client"
+      responses:
+        "201":
+          description: "Successfully created a client"
