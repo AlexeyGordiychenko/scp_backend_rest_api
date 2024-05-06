@@ -1,0 +1,7 @@
+fastapi
+pydantic
+uvicorn[standard]
+sqlmodel
+asyncpg
+SQLAlchemy
+uuid7
