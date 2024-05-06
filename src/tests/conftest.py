@@ -16,7 +16,7 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
         yield ac
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="function", autouse=True)
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     async with engine.begin() as conn:
         session = async_session_factory()
