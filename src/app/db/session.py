@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
 engine = create_async_engine(
-    settings.ASYNC_POSTGRES_URI,
+    str(settings.POSTGRES_URI),
     echo=settings.POSTGRES_ECHO,
     future=True,
     pool_size=settings.POSTGRES_POOL_SIZE,
