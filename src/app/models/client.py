@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlmodel import Field, SQLModel, SQLType
+from sqlmodel import Field, SQLModel
 from datetime import date, datetime
 from uuid import UUID
 
