@@ -5,3 +5,4 @@ sqlmodel
 asyncpg
 SQLAlchemy
 uuid7
+pydantic-settings
