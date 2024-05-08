@@ -16,8 +16,7 @@ class ClientBase(SQLModel):
     address_id: UUID = Field(nullable=False, foreign_key="address.id")
 
 
-class ClientCreate(ClientBase):
-    pass
+class ClientCreate(ClientBase): ...
 
 
 class ClientUpdate(ClientBase):
@@ -33,5 +32,4 @@ class Client(IdMixin, ClientBase, table=True):
     __tablename__ = "client"
 
 
-class ClientResponse(Client, table=False):
-    pass
+class ClientResponse(Client, table=False): ...

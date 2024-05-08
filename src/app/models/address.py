@@ -10,8 +10,7 @@ class AddressBase(SQLModel):
     street: str
 
 
-class AddressCreate(AddressBase):
-    pass
+class AddressCreate(AddressBase): ...
 
 
 class AddressUpdate(AddressBase):
@@ -24,5 +23,4 @@ class Address(IdMixin, AddressBase, table=True):
     __tablename__ = "address"
 
 
-class AddressResponse(Address, table=False):
-    pass
+class AddressResponse(Address, table=False): ...
