@@ -7,5 +7,7 @@ build-dev:
 stop-dev:
 	docker-compose -f docker-compose.yml --profile dev down
 
+restart-dev: stop-dev run-dev
+
 clear-dev:
 	docker-compose -f docker-compose.yml --profile dev down --volumes
