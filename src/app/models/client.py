@@ -3,7 +3,7 @@ from sqlmodel import Field, SQLModel
 from datetime import date, datetime
 from uuid import UUID
 
-from app.models.base import IdMixin
+from models.base import IdMixin
 
 
 class ClientBase(SQLModel):

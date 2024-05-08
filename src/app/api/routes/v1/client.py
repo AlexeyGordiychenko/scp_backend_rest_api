@@ -3,10 +3,10 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud.client import create_client, delete_client, get_client, update_client
-from app.db.session import get_session
-from app.models.base import DeleteResponse
-from app.models.client import ClientCreate, ClientResponse, ClientUpdate
+from crud.client import create_client, delete_client, get_client, update_client
+from db.session import get_session
+from models.base import DeleteResponse
+from models.client import ClientCreate, ClientResponse, ClientUpdate
 
 router = APIRouter(
     prefix="/client",

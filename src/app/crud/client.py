@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import delete, select
 
-from app.models.client import Client, ClientCreate, ClientUpdate
+from models.client import Client, ClientCreate, ClientUpdate
 
 
 async def create_client(session: AsyncSession, client: ClientCreate) -> Client:

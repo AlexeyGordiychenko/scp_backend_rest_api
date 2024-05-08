@@ -1,7 +1,7 @@
 from typing import Optional
 from sqlmodel import SQLModel
 
-from app.models.base import IdMixin
+from models.base import IdMixin
 
 
 class AddressBase(SQLModel):
