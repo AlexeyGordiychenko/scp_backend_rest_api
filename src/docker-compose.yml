@@ -20,12 +20,12 @@ services:
     <<: *postgres-base
     env_file: ".env"
     environment:
-      - POSTGRES_HOST=postgres-dev
-      - PGPORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - PGPORT=${POSTGRES_PORT}
     ports:
-      - ${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     expose:
-      - ${POSTGRES_PORT:-5432}
+      - ${POSTGRES_PORT}
     volumes:
       - ./postgres/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/
       - pgdata-dev:/var/lib/postgresql/data
@@ -35,25 +35,18 @@ services:
   app-dev:
     profiles: ["dev"]
     <<: *app-base
-    command:
-      [
-        "uvicorn",
-        "api.server:app",
-        "--reload",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "8000",
-      ]
+    command: uvicorn api.server:app --reload --host ${APP_HOST} --port ${APP_PORT}
     env_file: ".env"
     environment:
-      - POSTGRES_HOST=postgres-dev
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - APP_PORT=${APP_PORT}
+      - APP_HOST=${APP_HOST}
     volumes:
       - ./app:/app
     ports:
-      - 8000:8000
+      - ${APP_PORT}:${APP_PORT}
     expose:
-      - 8000
+      - ${APP_PORT}
     depends_on:
       postgres-dev:
         condition: service_healthy
