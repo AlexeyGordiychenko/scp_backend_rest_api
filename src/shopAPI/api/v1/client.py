@@ -10,7 +10,7 @@ from models.client import ClientCreate, ClientResponse, ClientUpdate
 
 router = APIRouter(
     prefix="/client",
-    tags=["client"],
+    tags=["Client"],
 )
 
 
