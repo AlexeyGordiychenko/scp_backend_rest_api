@@ -11,7 +11,8 @@ x-postgres-base: &postgres-base
     
 x-app-base: &app-base
   build:
-    context: ./app
+    context: .
+    dockerfile: Dockerfile
   restart: always
 
 services:
@@ -42,7 +43,7 @@ services:
       - APP_PORT=${APP_PORT}
       - APP_HOST=${APP_HOST}
     volumes:
-      - ./app:/app
+      - ./shopAPI:/shopAPI
     ports:
       - ${APP_PORT}:${APP_PORT}
     expose:

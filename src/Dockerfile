@@ -1,6 +1,6 @@
 FROM python:3.11-slim AS builder
 
-COPY requirements.txt requirements.txt
+COPY shopAPI/requirements.txt requirements.txt
 
 RUN pip install --upgrade pip && pip install --user --no-cache-dir -r requirements.txt
 
@@ -13,6 +13,6 @@ COPY --from=builder /root/.local /root/.local
 
 ENV PATH=/root/.local/bin:$PATH
 
-WORKDIR /app
+WORKDIR /shopAPI
 
-COPY . /app
+COPY shopAPI/ /shopAPI
