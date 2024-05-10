@@ -21,7 +21,7 @@ services:
     <<: *postgres-base
     env_file: ".env"
     environment:
-      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_HOST=postgres-dev
       - PGPORT=${POSTGRES_PORT}
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
@@ -39,7 +39,7 @@ services:
     command: uvicorn core.server:app --reload --host ${APP_HOST} --port ${APP_PORT}
     env_file: ".env"
     environment:
-      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_HOST=postgres-dev
       - APP_PORT=${APP_PORT}
       - APP_HOST=${APP_HOST}
     volumes:
