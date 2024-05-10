@@ -6,6 +6,8 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     VERSION: str = Field("0.0.1", env="VERSION")
     PROJECT_NAME: str = Field("ShopAPI", env="PROJECT_NAME")
+    APP_HOST: str = Field("0.0.0.0", env="APP_HOST")
+    APP_PORT: str = Field("8000", env="APP_PORT")
     POSTGRES_USER: str = Field("postgres", env="POSTGRES_USER")
     POSTGRES_PASSWORD: str = Field("postgres", env="POSTGRES_PASSWORD")
     POSTGRES_DB: str = Field("postgres", env="POSTGRES_DB")
