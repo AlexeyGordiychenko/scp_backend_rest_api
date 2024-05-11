@@ -55,8 +55,8 @@ async def update_client_route(
     "/{id}",
     summary="Delete a client.",
     status_code=status.HTTP_200_OK,
-    response_model=DeleteResponse,
+    response_model=bool,
 )
 async def delete_client_route(id: UUID, db: AsyncSession = Depends(get_session)):
     deleted = await delete_client(session=db, id=id)
-    return DeleteResponse(deleted=deleted)
+    return deleted
