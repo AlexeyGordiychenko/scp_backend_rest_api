@@ -1,5 +1,5 @@
 import uvicorn
-from core.server import app
+from shopAPI.core.server import app
 
 if __name__ == "__main__":
     uvicorn.run(app, port=8000)
