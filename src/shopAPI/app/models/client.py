@@ -1,9 +1,10 @@
 from typing import Optional
 from sqlmodel import Field, SQLModel
+
 from datetime import date, datetime
 from uuid import UUID
 
-from models.base import IdMixin
+from shopAPI.core.database.mixins.id import IdMixin
 
 
 class ClientBase(SQLModel):

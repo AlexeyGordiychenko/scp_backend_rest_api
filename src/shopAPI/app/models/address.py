@@ -1,7 +1,8 @@
 from typing import Optional
+
 from sqlmodel import SQLModel
 
-from models.base import IdMixin
+from shopAPI.core.database.mixins.id import IdMixin
 
 
 class AddressBase(SQLModel):

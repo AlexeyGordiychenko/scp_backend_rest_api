@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from shopAPI.crud.client import create_client, delete_client, get_client, update_client
 from shopAPI.core.database.session import get_session
-from shopAPI.models.client import ClientCreate, ClientResponse, ClientUpdate
+
+from shopAPI.app.models.client import ClientCreate, ClientResponse, ClientUpdate
 
 router = APIRouter(
     prefix="/client",
