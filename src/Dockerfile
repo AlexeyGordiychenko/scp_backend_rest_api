@@ -15,4 +15,4 @@ ENV PATH=/root/.local/bin:$PATH
 
 WORKDIR /shopAPI
 
-COPY shopAPI/ /shopAPI
+COPY . /shopAPI/

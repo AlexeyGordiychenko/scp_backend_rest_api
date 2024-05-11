@@ -43,7 +43,7 @@ services:
       - APP_PORT=${APP_PORT}
       - APP_HOST=${APP_HOST}
     volumes:
-      - ./shopAPI:/shopAPI
+      - ./:/shopAPI/
     ports:
       - ${APP_PORT}:${APP_PORT}
     expose:

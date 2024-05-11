@@ -1,10 +1,10 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
-from api import router as api_router
-from core.config import settings
-from db.session import engine
-from db.utils import create_db_and_tables
+from shopAPI.api import router as api_router
+from shopAPI.core.config import settings
+from shopAPI.db.session import engine
+from shopAPI.db.utils import create_db_and_tables
 
 
 @asynccontextmanager
