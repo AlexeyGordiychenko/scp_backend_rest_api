@@ -36,7 +36,7 @@ services:
   app-dev:
     profiles: ["dev"]
     <<: *app-base
-    command: uvicorn core.server:app --reload --host ${APP_HOST} --port ${APP_PORT}
+    entrypoint: ["scripts/start-dev.sh"]
     env_file: ".env"
     environment:
       - POSTGRES_HOST=postgres-dev
