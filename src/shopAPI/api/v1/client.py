@@ -1,13 +1,9 @@
 from uuid import UUID
-
 from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from shopAPI.crud.client import create_client, delete_client, get_client, update_client
-from shopAPI.core.database.session import get_session
 
 from shopAPI.app.schemas.requests.client import ClientCreate, ClientUpdate
 from shopAPI.app.schemas.responses.client import ClientResponse
+from shopAPI.app.controllers import ClientController, get_client_controller
 
 router = APIRouter(
     prefix="/client",
@@ -22,10 +18,9 @@ router = APIRouter(
     response_model=ClientResponse,
 )
 async def create_client_route(
-    data: ClientCreate,
-    db: AsyncSession = Depends(get_session),
+    data: ClientCreate, controller: ClientController = Depends(get_client_controller)
 ):
-    return await create_client(session=db, client=data)
+    return await controller.create(attributes=data.model_dump())
 
 
 @router.get(
@@ -34,8 +29,10 @@ async def create_client_route(
     status_code=status.HTTP_200_OK,
     response_model=ClientResponse,
 )
-async def get_client_route(id: UUID, db: AsyncSession = Depends(get_session)):
-    return await get_client(session=db, id=id)
+async def get_client_route(
+    id: UUID, controller: ClientController = Depends(get_client_controller)
+):
+    return await controller.get_by_id(id=id)
 
 
 @router.patch(
@@ -47,9 +44,12 @@ async def get_client_route(id: UUID, db: AsyncSession = Depends(get_session)):
 async def update_client_route(
     id: UUID,
     data: ClientUpdate,
-    db: AsyncSession = Depends(get_session),
+    controller: ClientController = Depends(get_client_controller),
 ):
-    return await update_client(session=db, id=id, client=data)
+    return await controller.update(
+        await controller.get_by_id(id=id),
+        attributes=data.model_dump(exclude_unset=True),
+    )
 
 
 @router.delete(
@@ -58,6 +58,7 @@ async def update_client_route(
     status_code=status.HTTP_200_OK,
     response_model=bool,
 )
-async def delete_client_route(id: UUID, db: AsyncSession = Depends(get_session)):
-    deleted = await delete_client(session=db, id=id)
-    return deleted
+async def delete_client_route(
+    id: UUID, controller: ClientController = Depends(get_client_controller)
+):
+    return await controller.delete(await controller.get_by_id(id=id))
