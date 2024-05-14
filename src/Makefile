@@ -1,6 +1,9 @@
 run-dev:
 	docker-compose -f docker-compose.yml --profile dev up -d
 
+run-dev-postgres:
+	docker-compose -f docker-compose.yml --profile dev up -d postgres-dev
+
 build-dev:
 	docker-compose -f docker-compose.yml --profile dev up -d --build
 
