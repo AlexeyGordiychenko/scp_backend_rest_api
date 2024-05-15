@@ -51,14 +51,16 @@ class BaseController(Generic[ModelType]):
         return response
 
     @Transactional()
-    async def create(self, attributes: dict[str, Any]) -> ModelType:
+    async def create(self, model_create: ModelType) -> ModelType:
         """
         Creates a new Object in the DB.
 
         :param attributes: The attributes to create the object with.
         :return: The created object.
         """
-        create = await self.repository.create(attributes)
+        create = await self.repository.create(
+            self.extract_attributes_from_schema(model_create)
+        )
         return create
 
     @Transactional(refresh=True)
@@ -85,7 +87,7 @@ class BaseController(Generic[ModelType]):
         return True
 
     @staticmethod
-    async def extract_attributes_from_schema(
+    def extract_attributes_from_schema(
         schema: BaseModel, excludes: set = None
     ) -> dict[str, Any]:
         """
@@ -96,4 +98,4 @@ class BaseController(Generic[ModelType]):
         :return: The attributes.
         """
 
-        return await schema.model_dump(exclude=excludes, exclude_unset=True)
+        return schema.model_dump(exclude=excludes, exclude_unset=True)

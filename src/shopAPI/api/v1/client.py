@@ -20,7 +20,7 @@ router = APIRouter(
 async def create_client_route(
     data: ClientCreate, controller: ClientController = Depends(get_client_controller)
 ):
-    return await controller.create(attributes=data.model_dump())
+    return await controller.create(data)
 
 
 @router.get(
