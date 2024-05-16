@@ -9,7 +9,6 @@ class ClientBase(SQLModel):
     # TODO: Add gender constraint
     gender: str = Field(nullable=False, regex="^(M|F)$")
     registration_date: datetime = Field(nullable=False)
-    # address_id: UUID = Field(nullable=False, foreign_key="address.id")
 
 
 class AddressBase(SQLModel):

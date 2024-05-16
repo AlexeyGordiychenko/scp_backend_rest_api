@@ -1,12 +1,12 @@
 from typing import Optional
 
 from datetime import date, datetime
-from uuid import UUID
 
-from shopAPI.core.schemas.base import ClientBase
+from shopAPI.core.schemas.base import ClientBase, AddressBase
 
 
-class ClientCreate(ClientBase): ...
+class ClientCreate(ClientBase):
+    address: AddressBase
 
 
 class ClientUpdate(ClientBase):
@@ -15,4 +15,3 @@ class ClientUpdate(ClientBase):
     birthday: Optional[date] = None
     gender: Optional[str] = None
     registration_date: Optional[datetime] = None
-    # address_id: Optional[UUID] = None
