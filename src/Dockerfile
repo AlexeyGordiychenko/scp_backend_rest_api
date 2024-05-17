@@ -1,6 +1,6 @@
 FROM python:3.11-slim AS builder
 
-COPY shopAPI/requirements.txt requirements.txt
+COPY requirements.txt requirements.txt
 
 RUN pip install --upgrade pip && pip install --user --no-cache-dir -r requirements.txt
 

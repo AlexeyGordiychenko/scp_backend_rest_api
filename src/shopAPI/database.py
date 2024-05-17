@@ -1,5 +1,8 @@
 from contextvars import ContextVar, Token
+from functools import wraps
 from typing import Union
+from uuid import UUID
+from uuid_extensions import uuid7
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -8,8 +11,39 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.sql.expression import Delete, Insert, Update
+from sqlmodel import Field, SQLModel
 
-from shopAPI.core.config import settings
+from shopAPI.config import settings
+
+
+class IdMixin(SQLModel):
+    id: UUID = Field(
+        default_factory=uuid7,
+        primary_key=True,
+        index=True,
+        nullable=False,
+    )
+
+
+class Transactional:
+    def __init__(self, refresh: bool = False):
+        self.refresh = refresh
+
+    def __call__(self, function):
+        @wraps(function)
+        async def decorator(*args, **kwargs):
+            try:
+                result = await function(*args, **kwargs)
+                await session.commit()
+                if self.refresh:
+                    await session.refresh(result)
+                return result
+            except Exception as exception:
+                await session.rollback()
+                raise exception
+
+        return decorator
+
 
 session_context: ContextVar[str] = ContextVar("session_context")
 

@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware import Middleware
 
-from shopAPI.api import router as api_router
-from shopAPI.core.config import settings
-from shopAPI.core.fastapi.middlewares.sqlalchemy import SQLAlchemyMiddleware
+from shopAPI.routers import router as api_router
+from shopAPI.config import settings
+from shopAPI.middlewares import SQLAlchemyMiddleware
 
 
 def get_application():

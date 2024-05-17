@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from shopAPI.core.database.session import (
+from shopAPI.database import (
     reset_session_context,
     session,
     set_session_context,

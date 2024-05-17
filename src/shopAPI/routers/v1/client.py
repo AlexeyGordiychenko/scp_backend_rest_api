@@ -1,9 +1,8 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, status
 
-from shopAPI.app.schemas.requests.client import ClientCreate, ClientUpdate
-from shopAPI.app.schemas.responses.client import ClientResponse
-from shopAPI.app.controllers import ClientController, get_client_controller
+from shopAPI.schemas import ClientCreate, ClientUpdate, ClientResponse
+from shopAPI.controllers import ClientController, get_client_controller
 
 router = APIRouter(
     prefix="/client",

@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 parent_dir = os.path.abspath(os.getcwd())
 sys.path.append(parent_dir)
-# print(sys.path)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -27,16 +26,12 @@ fileConfig(config.config_file_name)
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-from shopAPI.app import models
+from shopAPI import models
 
-# from shopAPI.app import models
 from sqlmodel import SQLModel
-# from shopAPI.app.models import Client
 
-# print(Base.metadata.tables)
-# print(SQLModel.metadata.tables)
 # For auto generate schemas
-from shopAPI.core.config import settings
+from shopAPI.config import settings
 
 target_metadata = SQLModel.metadata
 # target_metadata = SQLModel.metadata
@@ -46,7 +41,6 @@ target_metadata = SQLModel.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 config.set_main_option("sqlalchemy.url", str(settings.POSTGRES_URI))
-print(config.get_main_option("sqlalchemy.url"))
 
 
 def run_migrations_offline():

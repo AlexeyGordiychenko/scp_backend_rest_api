@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from shopAPI.app.schemas.extras.health import Health
-from shopAPI.core.config import settings
+from shopAPI.schemas import Health
+from shopAPI.config import settings
 
 health_router = APIRouter()
 router = APIRouter(
