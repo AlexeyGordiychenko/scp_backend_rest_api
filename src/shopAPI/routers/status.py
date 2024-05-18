@@ -1,16 +1,16 @@
 from fastapi import APIRouter
 
-from shopAPI.schemas import Health
+from shopAPI.schemas import ApiStatus
 from shopAPI.config import settings
 
-health_router = APIRouter(
-    tags=["Health"],
+status_router = APIRouter(
+    tags=["Status"],
 )
 
 
-@health_router.get("/")
-async def health() -> Health:
-    return Health(
+@status_router.get("/")
+async def status() -> ApiStatus:
+    return ApiStatus(
         name=settings.PROJECT_NAME,
         version=settings.VERSION,
         status="OK",

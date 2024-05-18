@@ -1,4 +1,4 @@
 from .v1 import router as api_router
-from .health import health_router
+from .status import status_router
 
-__all__ = ["api_router", "health_router"]
+__all__ = ["api_router", "status_router"]

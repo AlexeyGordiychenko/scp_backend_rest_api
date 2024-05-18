@@ -4,7 +4,7 @@ from datetime import date, datetime
 from typing import Optional
 
 
-class Health(SQLModel):
+class ApiStatus(SQLModel):
     name: str = Field(..., schema_extra={"example": "ShopAPI"})
     version: str = Field(..., schema_extra={"example": "1.0.0"})
     status: str = Field(..., schema_extra={"example": "OK"})
