@@ -1,8 +1,4 @@
-from fastapi import APIRouter
+from .v1 import router as api_router
+from .health import health_router
 
-from .v1 import router as v1_router
-
-router = APIRouter()
-router.include_router(v1_router)
-
-__all__ = ["router"]
+__all__ = ["api_router", "health_router"]

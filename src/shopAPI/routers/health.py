@@ -3,14 +3,12 @@ from fastapi import APIRouter
 from shopAPI.schemas import Health
 from shopAPI.config import settings
 
-health_router = APIRouter()
-router = APIRouter(
-    prefix="/health",
+health_router = APIRouter(
     tags=["Health"],
 )
 
 
-@router.get("/")
+@health_router.get("/")
 async def health() -> Health:
     return Health(
         name=settings.PROJECT_NAME,
