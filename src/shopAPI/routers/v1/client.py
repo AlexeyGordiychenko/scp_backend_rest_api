@@ -2,7 +2,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, status
 
 from shopAPI.schemas import ClientCreate, ClientUpdate, ClientResponse
-from shopAPI.controllers import ClientController, get_client_controller
+from shopAPI.controllers import ClientController
 
 router = APIRouter(
     prefix="/client",
@@ -17,7 +17,7 @@ router = APIRouter(
     response_model=ClientResponse,
 )
 async def create_client_route(
-    data: ClientCreate, controller: ClientController = Depends(get_client_controller)
+    data: ClientCreate, controller: ClientController = Depends()
 ):
     return await controller.create(data)
 
@@ -28,9 +28,7 @@ async def create_client_route(
     status_code=status.HTTP_200_OK,
     response_model=ClientResponse,
 )
-async def get_client_route(
-    id: UUID, controller: ClientController = Depends(get_client_controller)
-):
+async def get_client_route(id: UUID, controller: ClientController = Depends()):
     return await controller.get_by_id(id=id)
 
 
@@ -43,7 +41,7 @@ async def get_client_route(
 async def update_client_route(
     id: UUID,
     data: ClientUpdate,
-    controller: ClientController = Depends(get_client_controller),
+    controller: ClientController = Depends(),
 ):
     return await controller.update(
         await controller.get_by_id(id=id),
@@ -57,7 +55,5 @@ async def update_client_route(
     status_code=status.HTTP_200_OK,
     response_model=bool,
 )
-async def delete_client_route(
-    id: UUID, controller: ClientController = Depends(get_client_controller)
-):
+async def delete_client_route(id: UUID, controller: ClientController = Depends()):
     return await controller.delete(await controller.get_by_id(id=id))

@@ -106,11 +106,5 @@ class BaseController(Generic[ModelType]):
 
 
 class ClientController(BaseController[Client]):
-    def __init__(self, repository: ClientRepository):
+    def __init__(self, repository: ClientRepository = Depends()):
         super().__init__(model=Client, repository=repository)
-
-
-def get_client_controller(
-    session: AsyncSession = Depends(get_session),
-) -> ClientController:
-    return ClientController(repository=ClientRepository(session=session))

@@ -1,6 +1,7 @@
 from functools import reduce
 from typing import Any, Generic, Type, TypeVar
 
+from fastapi import Depends
 from sqlalchemy import Select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select
@@ -8,6 +9,7 @@ from sqlalchemy.orm import joinedload
 
 from sqlmodel import SQLModel
 
+from shopAPI.database import get_session
 from shopAPI.models import Address, Client
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
@@ -259,7 +261,7 @@ class ClientRepository(BaseRepository[Client]):
     Client repository provides all the database operations for the Client model.
     """
 
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(self, session: AsyncSession = Depends(get_session)) -> None:
         super().__init__(model=Client, session=session)
 
     async def create(self, attributes: dict[str, Any]) -> Client:
