@@ -108,3 +108,6 @@ class BaseController(Generic[ModelType]):
 class ClientController(BaseController[Client]):
     def __init__(self, repository: ClientRepository = Depends()):
         super().__init__(model=Client, repository=repository)
+
+    async def get_by_id(self, id: UUID) -> ModelType:
+        return await super().get_by_id(id=id, join_={"address"})
