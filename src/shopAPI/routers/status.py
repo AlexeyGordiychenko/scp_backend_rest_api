@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from shopAPI.schemas import ApiStatus
+from shopAPI.models import ApiStatus
 from shopAPI.config import settings
 
 status_router = APIRouter(
