@@ -21,17 +21,17 @@ class AddressBase(SQLModel):
     street: str
 
 
-class AddressCreate(AddressBase): ...
+class AddressCreate(AddressBase):
+    client_id: UUID
 
 
-class AddressUpdate(AddressBase):
+class AddressUpdate(AddressCreate):
     country: Optional[str] = None
     city: Optional[str] = None
     street: Optional[str] = None
 
 
-class AddressResponse(AddressBase):
-    id: UUID
+class AddressResponse(AddressBase): ...
 
 
 class ClientBase(SQLModel):
@@ -62,8 +62,9 @@ class ClientResponse(ClientBase):
 class Client(IdMixin, ClientBase, table=True):
     __tablename__ = "client"
 
-    address_id: UUID | None = Field(default=None, foreign_key="address.id")
-
 
 class Address(IdMixin, AddressBase, table=True):
     __tablename__ = "address"
+    client_id: UUID | None = Field(
+        primary_key=True, index=True, nullable=False, foreign_key="client.id"
+    )
