@@ -1,5 +1,5 @@
 from uuid import UUID
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
 from datetime import date, datetime
 from typing import Optional
 
@@ -26,6 +26,7 @@ class Address(AddressBase, table=True):
     client_id: UUID | None = Field(
         primary_key=True, index=True, nullable=False, foreign_key="client.id"
     )
+    client: "Client" = Relationship(back_populates="address")
 
 
 class AddressCreate(AddressBase):
@@ -52,6 +53,7 @@ class ClientBase(SQLModel):
 
 class Client(IdMixin, ClientBase, table=True):
     __tablename__ = "client"
+    address: Address | None = Relationship(back_populates="client")
 
 
 class ClientCreate(ClientBase):
