@@ -21,6 +21,13 @@ class AddressBase(SQLModel):
     street: str
 
 
+class Address(AddressBase, table=True):
+    __tablename__ = "address"
+    client_id: UUID | None = Field(
+        primary_key=True, index=True, nullable=False, foreign_key="client.id"
+    )
+
+
 class AddressCreate(AddressBase):
     client_id: UUID
 
@@ -43,6 +50,10 @@ class ClientBase(SQLModel):
     registration_date: datetime = Field(nullable=False)
 
 
+class Client(IdMixin, ClientBase, table=True):
+    __tablename__ = "client"
+
+
 class ClientCreate(ClientBase):
     address: AddressBase
 
@@ -57,14 +68,3 @@ class ClientUpdate(ClientBase):
 
 class ClientResponse(ClientBase):
     id: UUID
-
-
-class Client(IdMixin, ClientBase, table=True):
-    __tablename__ = "client"
-
-
-class Address(IdMixin, AddressBase, table=True):
-    __tablename__ = "address"
-    client_id: UUID | None = Field(
-        primary_key=True, index=True, nullable=False, foreign_key="client.id"
-    )
