@@ -264,16 +264,6 @@ class ClientRepository(BaseRepository[Client]):
     def __init__(self, session: AsyncSession = Depends(get_session)) -> None:
         super().__init__(model=Client, session=session)
 
-    async def create(self, attributes: dict[str, Any]) -> Client:
-        address_attributes = attributes.pop("address", {})
-        address = Address(**address_attributes)
-        self.session.add(address)
-        attributes["address_id"] = address.id
-        client = Client(**attributes)
-        self.session.add(client)
-
-        return client
-
     def _join_address(self, query: Select) -> Select:
         """
         Join address.

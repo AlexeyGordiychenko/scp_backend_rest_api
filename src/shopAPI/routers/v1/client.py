@@ -1,7 +1,11 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, status
 
-from shopAPI.models import ClientCreate, ClientUpdate, ClientResponse
+from shopAPI.models import (
+    ClientCreate,
+    ClientUpdate,
+    ClientResponseWithAddress,
+)
 from shopAPI.controllers import ClientController
 
 router = APIRouter(
@@ -14,7 +18,7 @@ router = APIRouter(
     "/",
     summary="Create a new client.",
     status_code=status.HTTP_201_CREATED,
-    response_model=ClientResponse,
+    response_model=ClientResponseWithAddress,
 )
 async def create_client_route(
     data: ClientCreate, controller: ClientController = Depends()
@@ -26,7 +30,7 @@ async def create_client_route(
     "/{id}",
     summary="Get a client.",
     status_code=status.HTTP_200_OK,
-    response_model=ClientResponse,
+    response_model=ClientResponseWithAddress,
 )
 async def get_client_route(id: UUID, controller: ClientController = Depends()):
     return await controller.get_by_id(id=id)
@@ -36,7 +40,7 @@ async def get_client_route(id: UUID, controller: ClientController = Depends()):
     "/{id}",
     summary="Update a client.",
     status_code=status.HTTP_200_OK,
-    response_model=ClientResponse,
+    response_model=ClientResponseWithAddress,
 )
 async def update_client_route(
     id: UUID,

@@ -55,6 +55,19 @@ class Client(IdMixin, ClientBase, table=True):
     __tablename__ = "client"
     address: Address | None = Relationship(back_populates="client")
 
+    def __init__(self, **kwargs):
+        address_data = kwargs.pop("address", None)
+        super().__init__(**kwargs)
+        if address_data:
+            self.address = Address(**address_data)
+
+    def __setattr__(self, name, value):
+        if name == "address" and isinstance(value, dict):
+            for attr, val in value.items():
+                setattr(self.address, attr, val)
+        else:
+            super().__setattr__(name, value)
+
 
 class ClientCreate(ClientBase):
     address: AddressBase
@@ -66,7 +79,12 @@ class ClientUpdate(ClientBase):
     birthday: Optional[date] = None
     gender: Optional[str] = None
     registration_date: Optional[datetime] = None
+    address: AddressBase | None = None
 
 
 class ClientResponse(ClientBase):
     id: UUID
+
+
+class ClientResponseWithAddress(ClientResponse):
+    address: AddressResponse | None = None
