@@ -85,10 +85,10 @@ class BaseRepository(Generic[ModelType]):
         query = self._query(join_)
         query = await self._get_by(query, field, value)
 
-        if join_ is not None:
-            return await self.all_unique(query)
         if unique:
             return await self._one(query)
+        if join_ is not None:
+            return await self._all_unique(query)
 
         return await self._all(query)
 
