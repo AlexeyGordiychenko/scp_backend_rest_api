@@ -20,6 +20,9 @@ class AddressBase(SQLModel):
     city: str
     street: str
 
+    class Config:
+        extra = "forbid"
+
 
 class Address(AddressBase, table=True):
     __tablename__ = "address"
@@ -45,6 +48,9 @@ class ClientBase(SQLModel):
     # TODO: Add gender constraint
     gender: str = Field(nullable=False, regex="^(M|F)$")
     registration_date: datetime = Field(nullable=False)
+
+    class Config:
+        extra = "forbid"
 
 
 class Client(IdMixin, ClientBase, table=True):
