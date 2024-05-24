@@ -29,11 +29,7 @@ class Address(AddressBase, table=True):
     client: "Client" = Relationship(back_populates="address")
 
 
-class AddressCreate(AddressBase):
-    client_id: UUID
-
-
-class AddressUpdate(AddressCreate):
+class AddressUpdate(AddressBase):
     country: Optional[str] = None
     city: Optional[str] = None
     street: Optional[str] = None
