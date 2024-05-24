@@ -75,7 +75,7 @@ class ClientUpdate(ClientBase):
     birthday: Optional[date] = None
     gender: Optional[str] = None
     registration_date: Optional[datetime] = None
-    address: AddressBase | None = None
+    address: Optional[AddressUpdate] = None
 
 
 class ClientResponse(ClientBase):
