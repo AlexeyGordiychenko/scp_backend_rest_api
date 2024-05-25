@@ -55,7 +55,9 @@ class ClientBase(SQLModel):
 
 class Client(IdMixin, ClientBase, table=True):
     __tablename__ = "client"
-    address: Address | None = Relationship(back_populates="client")
+    address: Address | None = Relationship(
+        sa_relationship_kwargs={"cascade": "all"}, back_populates="client"
+    )
 
     def __init__(self, **kwargs):
         address_data = kwargs.pop("address", None)
