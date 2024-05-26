@@ -1,9 +1,9 @@
 from uuid import UUID
 from sqlmodel import Field, Relationship, SQLModel
-from datetime import date, datetime
+from datetime import date
 from typing import Optional
 
-from shopAPI.database import IdMixin
+from shopAPI.database import IdMixin, TimestampMixin
 
 
 class ApiStatus(SQLModel):
@@ -47,13 +47,12 @@ class ClientBase(SQLModel):
     birthday: date = Field(nullable=False)
     # TODO: Add gender constraint
     gender: str = Field(nullable=False, regex="^(M|F)$")
-    registration_date: datetime = Field(nullable=False)
 
     class Config:
         extra = "forbid"
 
 
-class Client(IdMixin, ClientBase, table=True):
+class Client(IdMixin, TimestampMixin, ClientBase, table=True):
     __tablename__ = "client"
     address: Address | None = Relationship(
         sa_relationship_kwargs={"cascade": "all"}, back_populates="client"
@@ -82,7 +81,6 @@ class ClientUpdate(ClientBase):
     client_surname: Optional[str] = None
     birthday: Optional[date] = None
     gender: Optional[str] = None
-    registration_date: Optional[datetime] = None
     address: Optional[AddressUpdate] = None
 
 

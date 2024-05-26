@@ -1,4 +1,5 @@
 from asyncio import current_task
+from datetime import datetime
 from functools import wraps
 from uuid import UUID
 from uuid_extensions import uuid7
@@ -21,6 +22,10 @@ class IdMixin(SQLModel):
         index=True,
         nullable=False,
     )
+
+
+class TimestampMixin(SQLModel):
+    registration_date: datetime = Field(default_factory=datetime.now)
 
 
 class Transactional:
