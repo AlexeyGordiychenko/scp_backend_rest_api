@@ -1,5 +1,5 @@
 from functools import reduce
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, Generic, List, Type, TypeVar
 
 from fastapi import Depends
 from sqlalchemy import Select, func
@@ -263,6 +263,16 @@ class ClientRepository(BaseRepository[Client]):
 
     def __init__(self, session: AsyncSession = Depends(get_session)) -> None:
         super().__init__(model=Client, session=session)
+
+    async def get_by_name_and_surname(
+        self, client_name: str, client_surname: str
+    ) -> List[Client] | None:
+        query = self._query(join_={"address"})
+        query = query.filter(
+            Client.client_name == client_name
+            and Client.client_surname == client_surname
+        )
+        return await self._all_unique(query)
 
     def _join_address(self, query: Select) -> Select:
         """

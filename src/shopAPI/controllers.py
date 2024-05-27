@@ -1,4 +1,4 @@
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, Generic, List, Type, TypeVar
 from uuid import UUID
 
 from fastapi import Depends, HTTPException
@@ -111,3 +111,12 @@ class ClientController(BaseController[Client]):
 
     async def get_by_id(self, id: UUID) -> ModelType:
         return await super().get_by_id(id=id, join_={"address"})
+
+    async def get_by_name_and_surname(
+        self, client_name: str, client_surname: str
+    ) -> List[ModelType]:
+        db_objs = await self.repository.get_by_name_and_surname(
+            client_name=client_name, client_surname=client_surname
+        )
+
+        return db_objs
