@@ -63,7 +63,7 @@ class BaseRepository(Generic[ModelType]):
         query = query.offset(offset).limit(limit)
 
         if join_ is not None:
-            return await self.all_unique(query)
+            return await self._all_unique(query)
 
         return await self._all(query)
 
