@@ -264,14 +264,15 @@ class ClientRepository(BaseRepository[Client]):
     def __init__(self, session: AsyncSession = Depends(get_session)) -> None:
         super().__init__(model=Client, session=session)
 
-    async def get_by_name_and_surname(
-        self, client_name: str, client_surname: str
+    async def get_all(
+        self, name: str, surname: str, offset: int, limit: int
     ) -> List[Client] | None:
         query = self._query(join_={"address"})
-        query = query.filter(
-            Client.client_name == client_name
-            and Client.client_surname == client_surname
-        )
+        if name:
+            query = query.filter(Client.client_name == name)
+        if surname:
+            query = query.filter(Client.client_surname == surname)
+        query = query.offset(offset).limit(limit)
         return await self._all_unique(query)
 
     def _join_address(self, query: Select) -> Select:

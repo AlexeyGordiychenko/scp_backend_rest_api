@@ -1,6 +1,6 @@
 from typing import List
 from uuid import UUID
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 
 from shopAPI.models import (
     ClientCreate,
@@ -25,6 +25,24 @@ async def create_client_route(
     data: ClientCreate, controller: ClientController = Depends()
 ):
     return await controller.create(data)
+
+
+@router.get(
+    "/all",
+    summary="Get all clients with pagination.",
+    status_code=status.HTTP_200_OK,
+    response_model=List[ClientResponseWithAddress],
+)
+async def get_clients_all(
+    name: str = Query(None, description="Client's name."),
+    surname: str = Query(None, description="Client's surname."),
+    offset: int = Query(0, ge=0, description="Offset for pagination."),
+    limit: int = Query(100, gt=0, le=100, description="Number of items to return."),
+    controller: ClientController = Depends(),
+):
+    return await controller.get_all(
+        name=name, surname=surname, offset=offset, limit=limit
+    )
 
 
 @router.get(

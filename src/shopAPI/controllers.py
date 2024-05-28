@@ -112,11 +112,11 @@ class ClientController(BaseController[Client]):
     async def get_by_id(self, id: UUID) -> ModelType:
         return await super().get_by_id(id=id, join_={"address"})
 
-    async def get_by_name_and_surname(
-        self, client_name: str, client_surname: str
+    async def get_all(
+        self, name: str, surname: str, offset: int, limit: int
     ) -> List[ModelType]:
-        db_objs = await self.repository.get_by_name_and_surname(
-            client_name=client_name, client_surname=client_surname
+        db_objs = await self.repository.get_all(
+            name=name, surname=surname, offset=offset, limit=limit
         )
 
         return db_objs
