@@ -40,7 +40,7 @@ class BaseController(Generic[ModelType]):
         return db_obj
 
     async def get_all(
-        self, skip: int = 0, limit: int = 100, join_: set[str] | None = None
+        self, offset: int = 0, limit: int = 100, join_: set[str] | None = None
     ) -> list[ModelType]:
         """
         Returns a list of records based on pagination params.
@@ -51,7 +51,7 @@ class BaseController(Generic[ModelType]):
         :return: A list of records.
         """
 
-        response = await self.repository.get_all(skip, limit, join_)
+        response = await self.repository.get_all(offset, limit, join_)
         return response
 
     @Transactional()

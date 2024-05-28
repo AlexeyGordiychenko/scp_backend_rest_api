@@ -49,18 +49,18 @@ class BaseRepository(Generic[ModelType]):
         return model
 
     async def get_all(
-        self, skip: int = 0, limit: int = 100, join_: set[str] | None = None
+        self, offset: int = 0, limit: int = 100, join_: set[str] | None = None
     ) -> list[ModelType]:
         """
         Returns a list of model instances.
 
-        :param skip: The number of records to skip.
+        :param offset: The number of records to skip.
         :param limit: The number of record to return.
         :param join_: The joins to make.
         :return: A list of model instances.
         """
         query = self._query(join_)
-        query = query.offset(skip).limit(limit)
+        query = query.offset(offset).limit(limit)
 
         if join_ is not None:
             return await self.all_unique(query)
