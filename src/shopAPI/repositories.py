@@ -10,7 +10,7 @@ from sqlalchemy.orm import joinedload
 from sqlmodel import SQLModel
 
 from shopAPI.database import get_session
-from shopAPI.models import Address, Client
+from shopAPI.models import Client
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
 

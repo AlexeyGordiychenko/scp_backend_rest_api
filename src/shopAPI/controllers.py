@@ -5,10 +5,8 @@ from fastapi import Depends, HTTPException
 from pydantic import BaseModel
 
 from sqlmodel import SQLModel
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from shopAPI.database import Transactional
-from shopAPI.database import get_session
 from shopAPI.models import Client
 from shopAPI.repositories import BaseRepository, ClientRepository
 
