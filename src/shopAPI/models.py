@@ -1,4 +1,5 @@
 from uuid import UUID
+from pydantic import ConfigDict
 from sqlmodel import Field, Relationship, SQLModel
 from datetime import date
 from typing import Optional
@@ -7,11 +8,21 @@ from shopAPI.database import IdMixin, TimestampMixin
 
 
 class ApiStatus(SQLModel):
-    name: str = Field(..., schema_extra={"example": "ShopAPI"})
-    version: str = Field(..., schema_extra={"example": "1.0.0"})
-    status: str = Field(..., schema_extra={"example": "OK"})
-    message: str = Field(
-        ..., schema_extra={"example": "Visit /swagger for documentation."}
+    name: str = Field(...)
+    version: str = Field(...)
+    status: str = Field(...)
+    message: str = Field(...)
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "name": "ShopAPI",
+                    "version": "1.0.0",
+                    "status": "OK",
+                    "message": "Visit /swagger for documentation.",
+                },
+            ]
+        }
     )
 
 
@@ -20,8 +31,7 @@ class AddressBase(SQLModel):
     city: str
     street: str
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class Address(AddressBase, table=True):
@@ -48,8 +58,7 @@ class ClientBase(SQLModel):
     # TODO: Add gender constraint
     gender: str = Field(nullable=False, regex="^(M|F)$")
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class Client(IdMixin, TimestampMixin, ClientBase, table=True):
