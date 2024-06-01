@@ -1,3 +1,20 @@
+x-postgres-base: &postgres-base
+  image: postgres
+  restart: always
+  healthcheck:
+    test:
+      - CMD-SHELL
+      - pg_isready -U postgres
+    interval: 3s
+    timeout: 3s
+    retries: 5
+    
+x-app-base: &app-base
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: always
+
 services:
   postgres-dev:
     profiles: ["dev"]
@@ -37,8 +54,35 @@ services:
     networks:
       - dev
 
+  postgres-test:
+    profiles: ["test"]
+    <<: *postgres-base
+    env_file: ".env"
+    environment:
+      - POSTGRES_HOST=postgres-test
+    networks:
+      - test
+
+  app-test:
+    profiles: ["test"]
+    <<: *app-base
+    entrypoint: ["scripts/start-test.sh"]
+    build:
+      context: ./
+      args:
+        ENV: test
+    env_file: ".env_test"
+    environment:
+      - POSTGRES_HOST=postgres-test
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+    networks:
+      - test
+      
 volumes:
   pgdata-dev:
 
 networks:
+  test:
   dev:
