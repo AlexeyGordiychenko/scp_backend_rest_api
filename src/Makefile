@@ -15,7 +15,7 @@ build-dev:
 	$(COMPOSE_CMD_DEV) --profile dev up -d --build
 
 stop-dev:
-	$(COMPOSE_CMD_DEV) down
+	$(COMPOSE_CMD_DEV) --profile dev down
 
 restart-dev: stop-dev run-dev
 
@@ -23,8 +23,8 @@ clear-dev:
 	$(COMPOSE_CMD_DEV) --profile dev down --volumes
 
 run-test:
-	$(COMPOSE_CMD_TEST) run --rm app-test
-	$(COMPOSE_CMD_TEST) down
+	$(COMPOSE_CMD_TEST) run --rm -T app-test
+	$(COMPOSE_CMD_TEST) --profile test down
 
 generate-migration:
 	@read -p "Enter migration message: " message; \
