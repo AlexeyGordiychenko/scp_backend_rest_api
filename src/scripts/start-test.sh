@@ -5,4 +5,4 @@ set -e
 alembic upgrade head
 
 # Run tests
-sh -c "python -m pytest -s -vv"
+python -m pytest -s -vv
