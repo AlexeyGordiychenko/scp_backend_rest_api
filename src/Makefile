@@ -1,26 +1,26 @@
 run-dev:
-	docker-compose --profile dev up -d
+	docker compose --profile dev up -d
 
 run-dev-postgres:
-	docker-compose --profile dev up -d postgres-dev
+	docker compose --profile dev up -d postgres-dev
 
 build-dev:
-	docker-compose --profile dev up -d --build
+	docker compose --profile dev up -d --build
 
 stop-dev:
-	docker-compose --profile dev down
+	docker compose --profile dev down
 
 restart-dev: stop-dev run-dev
 
 clear-dev:
-	docker-compose --profile dev down --volumes
+	docker compose --profile dev down --volumes
 
 run-test:
-	docker-compose run --rm -T app-test
+	docker compose run --rm -T app-test
 	$(MAKE) stop-test
 
 stop-test:
-	docker-compose --profile test down
+	docker compose --profile test down
 
 generate-migration:
 	@read -p "Enter migration message: " message; \
