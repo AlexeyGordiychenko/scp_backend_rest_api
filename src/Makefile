@@ -17,6 +17,9 @@ clear-dev:
 
 run-test:
 	docker-compose run --rm -T app-test
+	$(MAKE) stop-test
+
+stop-test:
 	docker-compose --profile test down
 
 generate-migration:
