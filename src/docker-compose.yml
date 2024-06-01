@@ -74,6 +74,8 @@ services:
     env_file: ".env_test"
     environment:
       - POSTGRES_HOST=postgres-test
+    volumes:
+      - ./:/shopAPI/
     depends_on:
       postgres-test:
         condition: service_healthy
