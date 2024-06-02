@@ -1,23 +1,22 @@
-from fastapi.testclient import TestClient
-
-from shopAPI.server import app
-
-client = TestClient(app)
+from httpx import AsyncClient
+import pytest
 
 
-def test_post_client(client: TestClient) -> None:
-    response = client.post(
-        "/api/v1/client",
-        json={
-            "client_name": "test_name",
-            "client_surname": "test_username",
-            "birthday": "2000-01-01",
-            "gender": "M",
-            "address": {
-                "country": "test_country",
-                "city": "test_city",
-                "street": "test_street",
-            },
+@pytest.mark.asyncio
+async def test_post_client(client: AsyncClient) -> None:
+    payload = {
+        "client_name": "test_name",
+        "client_surname": "test_username",
+        "birthday": "2000-01-01",
+        "gender": "M",
+        "address": {
+            "country": "test_country",
+            "city": "test_city",
+            "street": "test_street",
         },
+    }
+    response = await client.post(
+        "client",
+        json=payload,
     )
     assert response.status_code == 201

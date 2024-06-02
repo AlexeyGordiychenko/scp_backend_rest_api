@@ -1,10 +1,13 @@
 import pytest
-from fastapi.testclient import TestClient
-
+from httpx import AsyncClient, ASGITransport
 from shopAPI.server import app
 
 
 @pytest.fixture(scope="session")
-def client():
-    with TestClient(app) as _client:
-        yield _client
+async def client():
+    async with AsyncClient(
+        base_url="http://testserver/api/v1/",
+        transport=ASGITransport(app),
+        follow_redirects=True,
+    ) as ac:
+        yield ac
