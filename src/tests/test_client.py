@@ -31,10 +31,13 @@ async def test_post_client(client: AsyncClient, db_session: AsyncSession) -> Non
     payload["id"] = id
     assert response_json == payload
 
-    query = select(Client).where(Client.id == id).options(joinedload(Client.address))
-    result = await db_session.scalars(query)
-    client_in_db = result.one_or_none()
-    client_in_db_json = ClientResponseWithAddress.model_validate(
-        client_in_db
-    ).model_dump(mode="json")
-    assert client_in_db_json == payload
+    client_in_db = (
+        await db_session.scalars(
+            select(Client).where(Client.id == id).options(joinedload(Client.address))
+        )
+    ).one_or_none()
+    assert client_in_db is not None
+    assert (
+        ClientResponseWithAddress.model_validate(client_in_db).model_dump(mode="json")
+        == payload
+    )
