@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 import pytest
 from httpx import AsyncClient, ASGITransport
 from shopAPI.server import app
-from shopAPI.database import get_session
+from shopAPI.database import get_session, engine, async_session_factory
 
 
 @pytest.fixture(scope="session")
@@ -18,5 +18,10 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
 
 @pytest.fixture(scope="function")
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
-    async for session in get_session():
+    async with engine.begin() as conn:
+        session = async_session_factory()
+        app.dependency_overrides[get_session] = lambda: session
         yield session
+        await session.close()
+        await conn.rollback()
+    await engine.dispose()
