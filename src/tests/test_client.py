@@ -18,6 +18,7 @@ async def test_post_client(
     assert response.status_code == 201
 
     response_json = response.json()
+    assert "id" in response_json
     id = response_json["id"]
     client_payload["id"] = id
     assert response_json == client_payload
