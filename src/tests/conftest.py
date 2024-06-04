@@ -25,3 +25,18 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
         await session.close()
         await conn.rollback()
     await engine.dispose()
+
+
+@pytest.fixture(scope="function")
+async def client_payload() -> dict:
+    return {
+        "client_name": "test_name",
+        "client_surname": "test_surname",
+        "birthday": "2000-01-01",
+        "gender": "M",
+        "address": {
+            "country": "test_country",
+            "city": "test_city",
+            "street": "test_street",
+        },
+    }

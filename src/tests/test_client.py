@@ -8,28 +8,19 @@ from shopAPI.models import Client, ClientResponseWithAddress
 
 
 @pytest.mark.asyncio
-async def test_post_client(client: AsyncClient, db_session: AsyncSession) -> None:
-    payload = {
-        "client_name": "test_name",
-        "client_surname": "test_username",
-        "birthday": "2000-01-01",
-        "gender": "M",
-        "address": {
-            "country": "test_country",
-            "city": "test_city",
-            "street": "test_street",
-        },
-    }
+async def test_post_client(
+    client: AsyncClient, client_payload: dict, db_session: AsyncSession
+) -> None:
     response = await client.post(
         "client",
-        json=payload,
+        json=client_payload,
     )
     assert response.status_code == 201
 
     response_json = response.json()
     id = response_json["id"]
-    payload["id"] = id
-    assert response_json == payload
+    client_payload["id"] = id
+    assert response_json == client_payload
 
     client_in_db = (
         await db_session.scalars(
@@ -39,5 +30,5 @@ async def test_post_client(client: AsyncClient, db_session: AsyncSession) -> Non
     assert client_in_db is not None
     assert (
         ClientResponseWithAddress.model_validate(client_in_db).model_dump(mode="json")
-        == payload
+        == client_payload
     )
