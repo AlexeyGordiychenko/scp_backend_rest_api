@@ -14,7 +14,6 @@ async def test_post_client(
     client: AsyncClient, client_payloads: List[dict], db_session: AsyncSession
 ) -> None:
     client_payload = client_payloads[0]
-    print(client_payload)
     response = await client.post(
         "client",
         json=client_payload,
@@ -43,7 +42,6 @@ async def test_post_client(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_get_client(client: AsyncClient, client_payloads: List[dict]) -> None:
     client_payload = client_payloads[0]
-    print(client_payload)
     response_create = await client.post(
         "client",
         json=client_payload,
