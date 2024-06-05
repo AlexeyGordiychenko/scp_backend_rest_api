@@ -55,22 +55,6 @@ async def get_client_route(id: UUID, controller: ClientController = Depends()):
     return await controller.get_by_id(id=id)
 
 
-@router.get(
-    "/{name}/{surname}",
-    summary="Get clients by name and surname.",
-    status_code=status.HTTP_200_OK,
-    response_model=List[ClientResponseWithAddress],
-)
-async def get_clients_by_name_and_surname(
-    client_name: str,
-    client_surname: str,
-    controller: ClientController = Depends(),
-):
-    return await controller.get_by_name_and_surname(
-        client_name=client_name, client_surname=client_surname
-    )
-
-
 @router.patch(
     "/{id}",
     summary="Update a client.",
