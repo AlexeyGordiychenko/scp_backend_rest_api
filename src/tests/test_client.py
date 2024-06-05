@@ -1,3 +1,4 @@
+from typing import List
 import pytest
 from httpx import AsyncClient
 from sqlmodel import select
@@ -8,9 +9,12 @@ from shopAPI.models import Client, ClientResponseWithAddress
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_post_client(
-    client: AsyncClient, client_payload: dict, db_session: AsyncSession
+    client: AsyncClient, client_payloads: List[dict], db_session: AsyncSession
 ) -> None:
+    client_payload = client_payloads[0]
+    print(client_payload)
     response = await client.post(
         "client",
         json=client_payload,
@@ -36,7 +40,10 @@ async def test_post_client(
 
 
 @pytest.mark.asyncio
-async def test_get_client(client: AsyncClient, client_payload: dict) -> None:
+@pytest.mark.parametrize("client_payloads", [1], indirect=True)
+async def test_get_client(client: AsyncClient, client_payloads: List[dict]) -> None:
+    client_payload = client_payloads[0]
+    print(client_payload)
     response_create = await client.post(
         "client",
         json=client_payload,

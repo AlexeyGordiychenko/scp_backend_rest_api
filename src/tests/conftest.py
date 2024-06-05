@@ -28,15 +28,18 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 @pytest.fixture(scope="function")
-async def client_payload() -> dict:
-    return {
-        "client_name": "test_name",
-        "client_surname": "test_surname",
-        "birthday": "2000-01-01",
-        "gender": "M",
-        "address": {
-            "country": "test_country",
-            "city": "test_city",
-            "street": "test_street",
-        },
-    }
+def client_payloads(request):
+    return [
+        {
+            "client_name": f"test_name_{i}",
+            "client_surname": f"test_surname_{i}",
+            "birthday": "2000-01-01",
+            "gender": "M",
+            "address": {
+                "country": f"test_country_{i}",
+                "city": f"test_city_{i}",
+                "street": f"test_street_{i}",
+            },
+        }
+        for i in range(request.param)
+    ]
