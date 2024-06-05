@@ -17,10 +17,14 @@ clear-dev:
 
 run-test:
 	docker compose run --rm -T app-test
+	$(MAKE) check-test
 	$(MAKE) stop-test
 
 stop-test:
 	docker compose --profile test down
+
+check-test:
+	docker compose exec postgres-test psql -U postgres -c "SELECT * FROM client;"
 
 generate-migration:
 	@read -p "Enter migration message: " message; \
