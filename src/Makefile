@@ -16,7 +16,7 @@ clear-dev:
 	docker compose --profile dev down --volumes
 
 run-test:
-	docker compose run --rm -T app-test
+	docker compose run --rm -T app-test || true
 	$(MAKE) check-test
 	$(MAKE) stop-test
 
