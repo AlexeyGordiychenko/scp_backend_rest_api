@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import AsyncGenerator
+from typing import AsyncGenerator, List
 import pytest
 from httpx import AsyncClient, ASGITransport
 from shopAPI.server import app
@@ -43,3 +43,19 @@ def client_payloads(request):
         }
         for i in range(request.param)
     ]
+
+
+@pytest.fixture
+async def create_clients(client: AsyncClient):
+    async def _create_clients(client_payloads: List[dict]) -> List[dict]:
+        for client_payload in client_payloads:
+            response_create = await client.post(
+                "client",
+                json=client_payload,
+            )
+            assert response_create.status_code == 201
+            response_create_json = response_create.json()
+            assert "id" in response_create_json
+            client_payload["id"] = response_create_json["id"]
+
+    return _create_clients
