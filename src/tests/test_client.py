@@ -42,7 +42,7 @@ async def test_get_client(
     await create_clients(client_payloads)
     created_client = client_payloads[0]
 
-    response_get = await client.get(f"client/{created_client["id"]}")
+    response_get = await client.get(f"client/{created_client['id']}")
     assert response_get.status_code == 200
     assert response_get.json() == created_client
 
