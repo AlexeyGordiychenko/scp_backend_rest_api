@@ -1,3 +1,5 @@
+from datetime import datetime
+import random
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import AsyncGenerator, List
 import pytest
@@ -28,13 +30,21 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 @pytest.fixture(scope="function")
-def client_payloads(request):
+def random_date() -> str:
+    start = datetime(1950, 1, 1)
+    end = datetime(2000, 1, 1)
+    random_date = start + (end - start) * random.random()
+    return random_date.strftime("%Y-%m-%d")
+
+
+@pytest.fixture(scope="function")
+def client_payloads(request, random_date) -> List[dict]:
     return [
         {
             "client_name": f"test_name_{i}",
             "client_surname": f"test_surname_{i}",
-            "birthday": "2000-01-01",
-            "gender": "M",
+            "birthday": random_date,
+            "gender": random.choice(["M", "F"]),
             "address": {
                 "country": f"test_country_{i}",
                 "city": f"test_city_{i}",
