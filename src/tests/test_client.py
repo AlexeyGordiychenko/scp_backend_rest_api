@@ -192,3 +192,21 @@ async def test_get_all_by_name_and_surname_double(
     assert len(response_get_json) == 2
     for i, client_payload in enumerate(client_payloads[1:]):
         assert client_payload == response_get_json[i]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("client_payloads", [2], indirect=True)
+async def test_update_client(
+    client: AsyncClient,
+    create_clients: Callable[[dict], Awaitable[dict]],
+    client_payloads: List[dict],
+) -> None:
+    updated_client = dict(client_payloads[1])
+    await create_clients(client_payloads)
+    created_client = client_payloads[0]
+    response_get = await client.patch(
+        f"client/{created_client['id']}", json=updated_client
+    )
+    updated_client["id"] = created_client["id"]
+    assert response_get.status_code == 200
+    assert response_get.json() == updated_client
