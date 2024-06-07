@@ -65,7 +65,7 @@ class BaseController(Generic[ModelType]):
         )
         return create
 
-    @Transactional(refresh=True)
+    @Transactional()
     async def update(self, model: ModelType, attributes: dict[str, Any]) -> ModelType:
         """
         Updates an Object in the DB.
