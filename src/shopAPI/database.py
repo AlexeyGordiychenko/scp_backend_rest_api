@@ -1,6 +1,7 @@
 from asyncio import current_task
 from datetime import datetime
 from functools import wraps
+from typing import Union
 from uuid import UUID
 from uuid_extensions import uuid7
 
@@ -8,8 +9,10 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_scoped_session,
     create_async_engine,
+    async_sessionmaker,
+    AsyncEngine,
+    AsyncConnection,
 )
-from sqlalchemy.orm import sessionmaker
 from sqlmodel import Field, SQLModel
 
 from shopAPI.config import settings
@@ -48,6 +51,19 @@ class Transactional:
         return decorator
 
 
+def prepare_session(bind: Union[AsyncEngine, AsyncConnection]) -> AsyncSession:
+    async_session_factory = async_sessionmaker(
+        bind=bind,
+        expire_on_commit=False,
+    )
+    session = async_scoped_session(
+        session_factory=async_session_factory,
+        scopefunc=current_task,
+    )
+
+    return session
+
+
 engine = create_async_engine(
     str(settings.POSTGRES_URI),
     echo=settings.POSTGRES_ECHO,
@@ -55,16 +71,7 @@ engine = create_async_engine(
     pool_size=settings.POSTGRES_POOL_SIZE,
 )
 
-async_session_factory = sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-)
-
-session = async_scoped_session(
-    session_factory=async_session_factory,
-    scopefunc=current_task,
-)
+session = prepare_session(engine)
 
 
 async def get_session():
