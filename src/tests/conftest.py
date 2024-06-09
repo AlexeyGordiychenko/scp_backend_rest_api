@@ -35,10 +35,13 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
 
 @pytest.fixture(scope="function")
 def random_date() -> str:
-    start = datetime(1950, 1, 1)
-    end = datetime(2000, 1, 1)
-    random_date = start + (end - start) * random.random()
-    return random_date.strftime("%Y-%m-%d")
+    def _random_date():
+        start = datetime(1950, 1, 1)
+        end = datetime(2000, 1, 1)
+        random_date = start + (end - start) * random.random()
+        return random_date.strftime("%Y-%m-%d")
+
+    return _random_date
 
 
 @pytest.fixture(scope="function")
@@ -47,7 +50,7 @@ def client_payloads(request, random_date) -> List[dict]:
         {
             "client_name": f"test_name_{i}",
             "client_surname": f"test_surname_{i}",
-            "birthday": random_date,
+            "birthday": random_date(),
             "gender": random.choice(["M", "F"]),
             "address": {
                 "country": f"test_country_{i}",
