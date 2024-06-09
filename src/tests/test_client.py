@@ -367,3 +367,18 @@ async def test_update_client_address_street(
     created_client["address"].update(updated_client["address"])
     assert response_get.status_code == 200
     assert response_get.json() == created_client
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("client_payloads", [1], indirect=True)
+async def test_delete_client(
+    client: AsyncClient,
+    create_clients: Callable[[dict], Awaitable[dict]],
+    client_payloads: List[dict],
+) -> None:
+    await create_clients(client_payloads)
+    created_client = client_payloads[0]
+
+    response_get = await client.delete(f"client/{created_client['id']}")
+    assert response_get.status_code == 200
+    assert response_get.json() is True
