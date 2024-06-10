@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 import pytest
 from httpx import AsyncClient
 from sqlmodel import select
@@ -49,31 +49,36 @@ async def test_get_client(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("client_payloads", [10], indirect=True)
+@pytest.mark.parametrize(
+    "limit, offset",
+    [
+        (3, None),
+        (3, 4),
+        (None, 8),
+    ],
+)
 async def test_get_all_clients_pagination(
     client: AsyncClient,
     client_payloads: List[dict],
+    limit: Optional[int],
+    offset: Optional[int],
 ) -> None:
     await create_clients(client, client_payloads)
 
-    response_get = await client.get("client/all?limit=3")
-    assert response_get.status_code == 200
-    response_get_json = response_get.json()
-    assert len(response_get_json) == 3
-    for i, client_payload in enumerate(client_payloads[:3]):
-        assert client_payload == response_get_json[i]
+    query_string = "&".join(
+        (
+            f"offset={offset}" if offset is not None else "",
+            f"limit={limit}" if limit is not None else "",
+        )
+    )
+    offset = 0 if offset is None else offset
+    limit = len(client_payloads) - offset if limit is None else limit
 
-    response_get = await client.get("client/all?offset=4&limit=3")
+    response_get = await client.get(f"client/all?{query_string}")
     assert response_get.status_code == 200
     response_get_json = response_get.json()
-    assert len(response_get_json) == 3
-    for i, client_payload in enumerate(client_payloads[4:7]):
-        assert client_payload == response_get_json[i]
-
-    response_get = await client.get("client/all?offset=8")
-    assert response_get.status_code == 200
-    response_get_json = response_get.json()
-    assert len(response_get_json) == 2
-    for i, client_payload in enumerate(client_payloads[8:]):
+    assert len(response_get_json) == limit
+    for i, client_payload in enumerate(client_payloads[offset : offset + limit]):
         assert client_payload == response_get_json[i]
 
 
