@@ -1,4 +1,3 @@
-from datetime import datetime
 import random
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import AsyncGenerator, List
@@ -7,6 +6,7 @@ from httpx import AsyncClient, ASGITransport
 from shopAPI.server import app
 
 import shopAPI.database as database
+from tests.utils import random_date
 
 
 @pytest.fixture(scope="session")
@@ -34,18 +34,7 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 @pytest.fixture(scope="function")
-def random_date() -> str:
-    def _random_date():
-        start = datetime(1950, 1, 1)
-        end = datetime(2000, 1, 1)
-        random_date = start + (end - start) * random.random()
-        return random_date.strftime("%Y-%m-%d")
-
-    return _random_date
-
-
-@pytest.fixture(scope="function")
-def client_payloads(request, random_date) -> List[dict]:
+def client_payloads(request) -> List[dict]:
     return [
         {
             "client_name": f"test_name_{i}",
@@ -60,19 +49,3 @@ def client_payloads(request, random_date) -> List[dict]:
         }
         for i in range(request.param)
     ]
-
-
-@pytest.fixture
-async def create_clients(client: AsyncClient):
-    async def _create_clients(client_payloads: List[dict]) -> List[dict]:
-        for client_payload in client_payloads:
-            response_create = await client.post(
-                "client",
-                json=client_payload,
-            )
-            assert response_create.status_code == 201
-            response_create_json = response_create.json()
-            assert "id" in response_create_json
-            client_payload["id"] = response_create_json["id"]
-
-    return _create_clients

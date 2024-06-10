@@ -1,4 +1,4 @@
-from typing import Awaitable, Callable, List
+from typing import List
 import pytest
 from httpx import AsyncClient
 from sqlmodel import select
@@ -6,16 +6,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from shopAPI.models import Client, ClientResponseWithAddress
+from tests.utils import create_clients, random_date
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_post_client(
-    create_clients: Callable[[dict], Awaitable[dict]],
+    client: AsyncClient,
     client_payloads: List[dict],
     db_session: AsyncSession,
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
 
     client_in_db = (
@@ -36,10 +37,9 @@ async def test_post_client(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_get_client(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
 
     response_get = await client.get(f"client/{created_client['id']}")
@@ -51,10 +51,9 @@ async def test_get_client(
 @pytest.mark.parametrize("client_payloads", [10], indirect=True)
 async def test_get_all_clients_pagination(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
 
     response_get = await client.get("client/all?limit=3")
     assert response_get.status_code == 200
@@ -82,10 +81,9 @@ async def test_get_all_clients_pagination(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_get_all_by_name(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
 
     response_get = await client.get(f"client/all?name={created_client['client_name']}")
@@ -99,11 +97,10 @@ async def test_get_all_by_name(
 @pytest.mark.parametrize("client_payloads", [2], indirect=True)
 async def test_get_all_by_name_double(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
     client_payloads.append(dict(client_payloads[1]))
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[1]
 
     response_get = await client.get(f"client/all?name={created_client['client_name']}")
@@ -118,10 +115,9 @@ async def test_get_all_by_name_double(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_get_all_by_surname(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
 
     response_get = await client.get(
@@ -137,11 +133,10 @@ async def test_get_all_by_surname(
 @pytest.mark.parametrize("client_payloads", [2], indirect=True)
 async def test_get_all_by_surname_double(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
     client_payloads.append(dict(client_payloads[1]))
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[1]
 
     response_get = await client.get(
@@ -158,10 +153,9 @@ async def test_get_all_by_surname_double(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_get_all_by_name_and_surname(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
 
     response_get = await client.get(
@@ -177,11 +171,10 @@ async def test_get_all_by_name_and_surname(
 @pytest.mark.parametrize("client_payloads", [2], indirect=True)
 async def test_get_all_by_name_and_surname_double(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
     client_payloads.append(dict(client_payloads[1]))
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[1]
 
     response_get = await client.get(
@@ -198,11 +191,10 @@ async def test_get_all_by_name_and_surname_double(
 @pytest.mark.parametrize("client_payloads", [2], indirect=True)
 async def test_update_client(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
     updated_client = dict(client_payloads[1])
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
     response_get = await client.patch(
         f"client/{created_client['id']}", json=updated_client
@@ -216,10 +208,9 @@ async def test_update_client(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_update_client_name(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
     updated_client = {"client_name": "new_name"}
     response_get = await client.patch(
@@ -234,10 +225,9 @@ async def test_update_client_name(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_update_client_surname(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
     updated_client = {"client_surname": "new_surname"}
     response_get = await client.patch(
@@ -251,12 +241,9 @@ async def test_update_client_surname(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_update_client_birthday(
-    client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
-    client_payloads: List[dict],
-    random_date: str,
+    client: AsyncClient, client_payloads: List[dict]
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
     updated_client = {"birthday": random_date()}
     response_get = await client.patch(
@@ -272,10 +259,9 @@ async def test_update_client_birthday(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_update_client_gender(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
     updated_client = {"gender": "M" if created_client["gender"] == "F" else "F"}
     response_get = await client.patch(
@@ -291,10 +277,9 @@ async def test_update_client_gender(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_update_client_address(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
     updated_client = {
         "address": {
@@ -316,10 +301,9 @@ async def test_update_client_address(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_update_client_address_country(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
     updated_client = {"address": {"country": "new_country"}}
     response_get = await client.patch(
@@ -335,10 +319,9 @@ async def test_update_client_address_country(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_update_client_address_city(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
     updated_client = {"address": {"city": "new_city"}}
     response_get = await client.patch(
@@ -354,10 +337,9 @@ async def test_update_client_address_city(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_update_client_address_street(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
     updated_client = {"address": {"street": "new_street"}}
     response_get = await client.patch(
@@ -373,10 +355,9 @@ async def test_update_client_address_street(
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
 async def test_delete_client(
     client: AsyncClient,
-    create_clients: Callable[[dict], Awaitable[dict]],
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client_payloads)
+    await create_clients(client, client_payloads)
     created_client = client_payloads[0]
 
     response_get = await client.delete(f"client/{created_client['id']}")
