@@ -10,45 +10,45 @@ from tests.utils import create_clients, random_date
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
+@pytest.mark.parametrize("client_payloads", [1, 2], indirect=True)
 async def test_post_client(
     client: AsyncClient,
     client_payloads: List[dict],
     db_session: AsyncSession,
 ) -> None:
     await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-
-    client_in_db = (
-        await db_session.scalars(
-            select(Client)
-            .where(Client.id == created_client["id"])
-            .options(joinedload(Client.address))
+    for client_payload in client_payloads:
+        client_in_db = (
+            await db_session.scalars(
+                select(Client)
+                .where(Client.id == client_payload["id"])
+                .options(joinedload(Client.address))
+            )
+        ).one_or_none()
+        assert client_in_db is not None
+        assert (
+            ClientResponseWithAddress.model_validate(client_in_db).model_dump(
+                mode="json"
+            )
+            == client_payload
         )
-    ).one_or_none()
-    assert client_in_db is not None
-    assert (
-        ClientResponseWithAddress.model_validate(client_in_db).model_dump(mode="json")
-        == created_client
-    )
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
+@pytest.mark.parametrize("client_payloads", [1, 2], indirect=True)
 async def test_get_client(
     client: AsyncClient,
     client_payloads: List[dict],
 ) -> None:
     await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-
-    response_get = await client.get(f"client/{created_client['id']}")
-    assert response_get.status_code == 200
-    assert response_get.json() == created_client
+    for client_payload in client_payloads:
+        response_get = await client.get(f"client/{client_payload['id']}")
+        assert response_get.status_code == 200
+        assert response_get.json() == client_payload
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [10], indirect=True)
+@pytest.mark.parametrize("client_payloads", [10, 15], indirect=True)
 @pytest.mark.parametrize(
     "limit, offset",
     [
@@ -83,19 +83,20 @@ async def test_get_all_clients_pagination(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
+@pytest.mark.parametrize("client_payloads", [1, 2], indirect=True)
 async def test_get_all_by_name(
     client: AsyncClient,
     client_payloads: List[dict],
 ) -> None:
     await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-
-    response_get = await client.get(f"client/all?name={created_client['client_name']}")
-    assert response_get.status_code == 200
-    response_get_json = response_get.json()
-    assert len(response_get_json) == 1
-    assert response_get_json[0] == created_client
+    for client_payload in client_payloads:
+        response_get = await client.get(
+            f"client/all?name={client_payload['client_name']}"
+        )
+        assert response_get.status_code == 200
+        response_get_json = response_get.json()
+        assert len(response_get_json) == 1
+        assert response_get_json[0] == client_payload
 
 
 @pytest.mark.asyncio
@@ -104,34 +105,33 @@ async def test_get_all_by_name_double(
     client: AsyncClient,
     client_payloads: List[dict],
 ) -> None:
-    client_payloads.append(dict(client_payloads[1]))
+    client_name = client_payloads[0]["client_name"]
+    client_payloads[1]["client_name"] = client_name
     await create_clients(client, client_payloads)
-    created_client = client_payloads[1]
 
-    response_get = await client.get(f"client/all?name={created_client['client_name']}")
+    response_get = await client.get(f"client/all?name={client_name}")
     assert response_get.status_code == 200
     response_get_json = response_get.json()
     assert len(response_get_json) == 2
-    for i, client_payload in enumerate(client_payloads[1:]):
+    for i, client_payload in enumerate(client_payloads):
         assert client_payload == response_get_json[i]
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
+@pytest.mark.parametrize("client_payloads", [1, 2], indirect=True)
 async def test_get_all_by_surname(
     client: AsyncClient,
     client_payloads: List[dict],
 ) -> None:
     await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-
-    response_get = await client.get(
-        f"client/all?surname={created_client['client_surname']}"
-    )
-    assert response_get.status_code == 200
-    response_get_json = response_get.json()
-    assert len(response_get_json) == 1
-    assert response_get_json[0] == created_client
+    for client_payload in client_payloads:
+        response_get = await client.get(
+            f"client/all?surname={client_payload['client_surname']}"
+        )
+        assert response_get.status_code == 200
+        response_get_json = response_get.json()
+        assert len(response_get_json) == 1
+        assert response_get_json[0] == client_payload
 
 
 @pytest.mark.asyncio
@@ -140,36 +140,33 @@ async def test_get_all_by_surname_double(
     client: AsyncClient,
     client_payloads: List[dict],
 ) -> None:
-    client_payloads.append(dict(client_payloads[1]))
+    client_surname = client_payloads[0]["client_surname"]
+    client_payloads[1]["client_surname"] = client_surname
     await create_clients(client, client_payloads)
-    created_client = client_payloads[1]
 
-    response_get = await client.get(
-        f"client/all?surname={created_client['client_surname']}"
-    )
+    response_get = await client.get(f"client/all?surname={client_surname}")
     assert response_get.status_code == 200
     response_get_json = response_get.json()
     assert len(response_get_json) == 2
-    for i, client_payload in enumerate(client_payloads[1:]):
+    for i, client_payload in enumerate(client_payloads):
         assert client_payload == response_get_json[i]
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
+@pytest.mark.parametrize("client_payloads", [1, 2], indirect=True)
 async def test_get_all_by_name_and_surname(
     client: AsyncClient,
     client_payloads: List[dict],
 ) -> None:
     await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-
-    response_get = await client.get(
-        f"client/all?name={created_client['client_name']}&surname={created_client['client_surname']}"
-    )
-    assert response_get.status_code == 200
-    response_get_json = response_get.json()
-    assert len(response_get_json) == 1
-    assert response_get_json[0] == created_client
+    for client_payload in client_payloads:
+        response_get = await client.get(
+            f"client/all?name={client_payload['client_name']}&surname={client_payload['client_surname']}"
+        )
+        assert response_get.status_code == 200
+        response_get_json = response_get.json()
+        assert len(response_get_json) == 1
+        assert response_get_json[0] == client_payload
 
 
 @pytest.mark.asyncio
@@ -178,17 +175,19 @@ async def test_get_all_by_name_and_surname_double(
     client: AsyncClient,
     client_payloads: List[dict],
 ) -> None:
-    client_payloads.append(dict(client_payloads[1]))
+    client_name = client_payloads[0]["client_name"]
+    client_surname = client_payloads[0]["client_surname"]
+    client_payloads[1]["client_name"] = client_name
+    client_payloads[1]["client_surname"] = client_surname
     await create_clients(client, client_payloads)
-    created_client = client_payloads[1]
 
     response_get = await client.get(
-        f"client/all?name={created_client['client_name']}&surname={created_client['client_surname']}"
+        f"client/all?name={client_name}&surname={client_surname}"
     )
     assert response_get.status_code == 200
     response_get_json = response_get.json()
     assert len(response_get_json) == 2
-    for i, client_payload in enumerate(client_payloads[1:]):
+    for i, client_payload in enumerate(client_payloads):
         assert client_payload == response_get_json[i]
 
 
@@ -357,14 +356,13 @@ async def test_update_client_address_street(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
+@pytest.mark.parametrize("client_payloads", [1, 2], indirect=True)
 async def test_delete_client(
     client: AsyncClient,
     client_payloads: List[dict],
 ) -> None:
     await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-
-    response_get = await client.delete(f"client/{created_client['id']}")
-    assert response_get.status_code == 200
-    assert response_get.json() is True
+    for client_payload in client_payloads:
+        response_get = await client.delete(f"client/{client_payload['id']}")
+        assert response_get.status_code == 200
+        assert response_get.json() is True
