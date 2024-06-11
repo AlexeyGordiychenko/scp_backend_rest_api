@@ -50,31 +50,22 @@ async def test_get_client(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("client_payloads", [10, 15], indirect=True)
 @pytest.mark.parametrize(
-    "limit, offset",
+    "params",
     [
-        (3, None),
-        (3, 4),
-        (None, 8),
+        {"limit": 3},
+        {"limit": 3, "offset": 4},
+        {"offset": 8},
     ],
 )
 async def test_get_all_clients_pagination(
     client: AsyncClient,
     client_payloads: List[dict],
-    limit: Optional[int],
-    offset: Optional[int],
+    params: dict,
 ) -> None:
     await create_clients(client, client_payloads)
-
-    query_string = "&".join(
-        (
-            f"offset={offset}" if offset is not None else "",
-            f"limit={limit}" if limit is not None else "",
-        )
-    )
-    offset = 0 if offset is None else offset
-    limit = len(client_payloads) - offset if limit is None else limit
-
-    response_get = await client.get(f"client/all?{query_string}")
+    offset = params.get("offset", 0)
+    limit = params.get("limit", len(client_payloads) - offset)
+    response_get = await client.get("client/all", params=params)
     assert response_get.status_code == 200
     response_get_json = response_get.json()
     assert len(response_get_json) == limit
