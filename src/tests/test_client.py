@@ -145,147 +145,39 @@ async def test_update_client(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("client_payloads", [1], indirect=True)
-async def test_update_client_name(
+@pytest.mark.parametrize(
+    "update",
+    [
+        {"client_name": "new_name"},
+        {"client_surname": "new_surname"},
+        {"birthday": random_date()},
+        {"gender": None},
+        {
+            "address": {
+                "country": "new_country",
+                "city": "new_city",
+                "street": "new_street",
+            }
+        },
+        {"address": {"country": "new_country"}},
+        {"address": {"city": "new_city"}},
+        {"address": {"street": "new_street"}},
+    ],
+)
+async def test_update_client_field(
     client: AsyncClient,
     client_payloads: List[dict],
+    update: dict,
 ) -> None:
     await create_clients(client, client_payloads)
     created_client = client_payloads[0]
-    updated_client = {"client_name": "new_name"}
-    response_get = await client.patch(
-        f"client/{created_client['id']}", json=updated_client
-    )
-    created_client.update(updated_client)
-    assert response_get.status_code == 200
-    assert response_get.json() == created_client
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
-async def test_update_client_surname(
-    client: AsyncClient,
-    client_payloads: List[dict],
-) -> None:
-    await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-    updated_client = {"client_surname": "new_surname"}
-    response_get = await client.patch(
-        f"client/{created_client['id']}", json=updated_client
-    )
-    created_client.update(updated_client)
-    assert response_get.status_code == 200
-    assert response_get.json() == created_client
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
-async def test_update_client_birthday(
-    client: AsyncClient, client_payloads: List[dict]
-) -> None:
-    await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-    updated_client = {"birthday": random_date()}
-    response_get = await client.patch(
-        f"client/{created_client['id']}", json=updated_client
-    )
-
-    created_client.update(updated_client)
-    assert response_get.status_code == 200
-    assert response_get.json() == created_client
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
-async def test_update_client_gender(
-    client: AsyncClient,
-    client_payloads: List[dict],
-) -> None:
-    await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-    updated_client = {"gender": "M" if created_client["gender"] == "F" else "F"}
-    response_get = await client.patch(
-        f"client/{created_client['id']}", json=updated_client
-    )
-
-    created_client.update(updated_client)
-    assert response_get.status_code == 200
-    assert response_get.json() == created_client
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
-async def test_update_client_address(
-    client: AsyncClient,
-    client_payloads: List[dict],
-) -> None:
-    await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-    updated_client = {
-        "address": {
-            "country": "new_country",
-            "city": "new_city",
-            "street": "new_street",
-        }
-    }
-    response_get = await client.patch(
-        f"client/{created_client['id']}", json=updated_client
-    )
-
-    created_client.update(updated_client)
-    assert response_get.status_code == 200
-    assert response_get.json() == created_client
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
-async def test_update_client_address_country(
-    client: AsyncClient,
-    client_payloads: List[dict],
-) -> None:
-    await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-    updated_client = {"address": {"country": "new_country"}}
-    response_get = await client.patch(
-        f"client/{created_client['id']}", json=updated_client
-    )
-
-    created_client["address"].update(updated_client["address"])
-    assert response_get.status_code == 200
-    assert response_get.json() == created_client
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
-async def test_update_client_address_city(
-    client: AsyncClient,
-    client_payloads: List[dict],
-) -> None:
-    await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-    updated_client = {"address": {"city": "new_city"}}
-    response_get = await client.patch(
-        f"client/{created_client['id']}", json=updated_client
-    )
-
-    created_client["address"].update(updated_client["address"])
-    assert response_get.status_code == 200
-    assert response_get.json() == created_client
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [1], indirect=True)
-async def test_update_client_address_street(
-    client: AsyncClient,
-    client_payloads: List[dict],
-) -> None:
-    await create_clients(client, client_payloads)
-    created_client = client_payloads[0]
-    updated_client = {"address": {"street": "new_street"}}
-    response_get = await client.patch(
-        f"client/{created_client['id']}", json=updated_client
-    )
-
-    created_client["address"].update(updated_client["address"])
+    if "gender" in update:
+        update["gender"] = "M" if created_client["gender"] == "F" else "F"
+    response_get = await client.patch(f"client/{created_client['id']}", json=update)
+    if "address" in update:
+        created_client["address"].update(update["address"])
+    else:
+        created_client.update(update)
     assert response_get.status_code == 200
     assert response_get.json() == created_client
 
