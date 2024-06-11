@@ -100,55 +100,25 @@ async def test_get_all_by_fields(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("client_payloads", [2], indirect=True)
-async def test_get_all_by_name_double(
+@pytest.mark.parametrize(
+    "params_template",
+    [
+        {"name": "client_name"},
+        {"surname": "client_surname"},
+        {"name": "client_name", "surname": "client_surname"},
+    ],
+)
+async def test_get_all_by_fields_double(
     client: AsyncClient,
     client_payloads: List[dict],
+    params_template: dict,
 ) -> None:
-    client_name = client_payloads[0]["client_name"]
-    client_payloads[1]["client_name"] = client_name
+    for value in params_template.values():
+        client_payloads[1][value] = client_payloads[0][value]
     await create_clients(client, client_payloads)
 
-    response_get = await client.get(f"client/all?name={client_name}")
-    assert response_get.status_code == 200
-    response_get_json = response_get.json()
-    assert len(response_get_json) == 2
-    for i, client_payload in enumerate(client_payloads):
-        assert client_payload == response_get_json[i]
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [2], indirect=True)
-async def test_get_all_by_surname_double(
-    client: AsyncClient,
-    client_payloads: List[dict],
-) -> None:
-    client_surname = client_payloads[0]["client_surname"]
-    client_payloads[1]["client_surname"] = client_surname
-    await create_clients(client, client_payloads)
-
-    response_get = await client.get(f"client/all?surname={client_surname}")
-    assert response_get.status_code == 200
-    response_get_json = response_get.json()
-    assert len(response_get_json) == 2
-    for i, client_payload in enumerate(client_payloads):
-        assert client_payload == response_get_json[i]
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize("client_payloads", [2], indirect=True)
-async def test_get_all_by_name_and_surname_double(
-    client: AsyncClient,
-    client_payloads: List[dict],
-) -> None:
-    client_name = client_payloads[0]["client_name"]
-    client_surname = client_payloads[0]["client_surname"]
-    client_payloads[1]["client_name"] = client_name
-    client_payloads[1]["client_surname"] = client_surname
-    await create_clients(client, client_payloads)
-
-    response_get = await client.get(
-        f"client/all?name={client_name}&surname={client_surname}"
-    )
+    params = {key: client_payloads[0][value] for key, value in params_template.items()}
+    response_get = await client.get("client/all", params=params)
     assert response_get.status_code == 200
     response_get_json = response_get.json()
     assert len(response_get_json) == 2
