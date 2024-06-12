@@ -132,7 +132,7 @@ async def test_update_client(
     client: AsyncClient,
     client_payloads: List[dict],
 ) -> None:
-    updated_client = dict(client_payloads[1])
+    updated_client = client_payloads.pop()
     await create_clients(client, client_payloads)
     created_client = client_payloads[0]
     response_get = await client.patch(
