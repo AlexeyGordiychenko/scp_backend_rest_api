@@ -115,6 +115,7 @@ async def test_get_all_by_fields_double(
 async def test_update_client(
     client: AsyncClient,
     client_payloads: List[dict],
+    db_session: AsyncSession,
 ) -> None:
     updated_client = client_payloads.pop()
     await create_clients(client, client_payloads)
@@ -125,6 +126,7 @@ async def test_update_client(
     updated_client["id"] = created_client["id"]
     assert response_get.status_code == 200
     assert response_get.json() == updated_client
+    await compare_db_client_to_payload(updated_client, db_session)
 
 
 @pytest.mark.asyncio
@@ -152,6 +154,7 @@ async def test_update_client_field(
     client: AsyncClient,
     client_payloads: List[dict],
     update: dict,
+    db_session: AsyncSession,
 ) -> None:
     await create_clients(client, client_payloads)
     created_client = client_payloads[0]
@@ -164,6 +167,7 @@ async def test_update_client_field(
         created_client.update(update)
     assert response_get.status_code == 200
     assert response_get.json() == created_client
+    await compare_db_client_to_payload(created_client, db_session)
 
 
 @pytest.mark.asyncio
