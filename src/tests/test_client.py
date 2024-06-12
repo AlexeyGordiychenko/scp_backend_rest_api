@@ -1,12 +1,9 @@
-from typing import List, Optional
+from typing import List
 import pytest
 from httpx import AsyncClient
-from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
 
-from shopAPI.models import Client, ClientResponseWithAddress
-from tests.utils import create_clients, random_date
+from tests.utils import compare_db_client_to_payload, create_clients, random_date
 
 
 @pytest.mark.asyncio
@@ -18,20 +15,7 @@ async def test_post_client(
 ) -> None:
     await create_clients(client, client_payloads)
     for client_payload in client_payloads:
-        client_in_db = (
-            await db_session.scalars(
-                select(Client)
-                .where(Client.id == client_payload["id"])
-                .options(joinedload(Client.address))
-            )
-        ).one_or_none()
-        assert client_in_db is not None
-        assert (
-            ClientResponseWithAddress.model_validate(client_in_db).model_dump(
-                mode="json"
-            )
-            == client_payload
-        )
+        await compare_db_client_to_payload(client_payload, db_session)
 
 
 @pytest.mark.asyncio
