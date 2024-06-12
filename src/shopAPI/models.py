@@ -26,6 +26,10 @@ class ApiStatus(SQLModel):
     )
 
 
+class ErrorMessage(SQLModel):
+    detail: str
+
+
 class AddressBase(SQLModel):
     country: str
     city: str

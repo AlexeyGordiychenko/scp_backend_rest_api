@@ -6,6 +6,7 @@ from shopAPI.models import (
     ClientCreate,
     ClientUpdate,
     ClientResponseWithAddress,
+    ErrorMessage,
 )
 from shopAPI.controllers import ClientController
 
@@ -50,6 +51,7 @@ async def get_clients_all(
     summary="Get a client.",
     status_code=status.HTTP_200_OK,
     response_model=ClientResponseWithAddress,
+    responses={404: {"model": ErrorMessage}},
 )
 async def get_client_route(id: UUID, controller: ClientController = Depends()):
     return await controller.get_by_id(id=id)
