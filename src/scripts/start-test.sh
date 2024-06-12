@@ -5,4 +5,4 @@ set -e
 alembic upgrade head
 
 # Run tests
-python -m pytest -s -vv
+python -m pytest -s -vv --cov=shopAPI --cov-report html --cov-report term
