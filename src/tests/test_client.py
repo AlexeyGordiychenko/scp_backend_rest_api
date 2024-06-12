@@ -3,7 +3,12 @@ import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tests.utils import compare_db_client_to_payload, create_clients, random_date
+from tests.utils import (
+    compare_db_client_to_payload,
+    create_clients,
+    get_client_from_db,
+    random_date,
+)
 
 
 @pytest.mark.asyncio
@@ -175,9 +180,11 @@ async def test_update_client_field(
 async def test_delete_client(
     client: AsyncClient,
     client_payloads: List[dict],
+    db_session: AsyncSession,
 ) -> None:
     await create_clients(client, client_payloads)
     for client_payload in client_payloads:
         response_get = await client.delete(f"client/{client_payload['id']}")
         assert response_get.status_code == 200
         assert response_get.json() is True
+        assert await get_client_from_db(client_payload["id"], db_session) is None
