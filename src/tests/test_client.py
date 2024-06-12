@@ -3,12 +3,7 @@ import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tests.utils import (
-    compare_db_client_to_payload,
-    create_clients,
-    get_client_from_db,
-    random_date,
-)
+import tests.utils as utils
 
 
 @pytest.mark.asyncio
@@ -18,9 +13,9 @@ async def test_post_client(
     client_payloads: List[dict],
     db_session: AsyncSession,
 ) -> None:
-    await create_clients(client, client_payloads)
+    await utils.create_clients(client, client_payloads)
     for client_payload in client_payloads:
-        await compare_db_client_to_payload(client_payload, db_session)
+        await utils.compare_db_client_to_payload(client_payload, db_session)
 
 
 @pytest.mark.asyncio
@@ -29,7 +24,7 @@ async def test_get_client(
     client: AsyncClient,
     client_payloads: List[dict],
 ) -> None:
-    await create_clients(client, client_payloads)
+    await utils.create_clients(client, client_payloads)
     for client_payload in client_payloads:
         response_get = await client.get(f"client/{client_payload['id']}")
         assert response_get.status_code == 200
@@ -51,7 +46,7 @@ async def test_get_all_clients_pagination(
     client_payloads: List[dict],
     params: dict,
 ) -> None:
-    await create_clients(client, client_payloads)
+    await utils.create_clients(client, client_payloads)
     offset = params.get("offset", 0)
     limit = params.get("limit", len(client_payloads) - offset)
     response_get = await client.get("client/all", params=params)
@@ -77,7 +72,7 @@ async def test_get_all_by_fields(
     client_payloads: List[dict],
     params_template: dict,
 ) -> None:
-    await create_clients(client, client_payloads)
+    await utils.create_clients(client, client_payloads)
     for client_payload in client_payloads:
         params = {key: client_payload[value] for key, value in params_template.items()}
         response_get = await client.get("client/all", params=params)
@@ -104,7 +99,7 @@ async def test_get_all_by_fields_double(
 ) -> None:
     for value in params_template.values():
         client_payloads[1][value] = client_payloads[0][value]
-    await create_clients(client, client_payloads)
+    await utils.create_clients(client, client_payloads)
 
     params = {key: client_payloads[0][value] for key, value in params_template.items()}
     response_get = await client.get("client/all", params=params)
@@ -123,7 +118,7 @@ async def test_update_client(
     db_session: AsyncSession,
 ) -> None:
     updated_client = client_payloads.pop()
-    await create_clients(client, client_payloads)
+    await utils.create_clients(client, client_payloads)
     created_client = client_payloads[0]
     response_get = await client.patch(
         f"client/{created_client['id']}", json=updated_client
@@ -131,7 +126,7 @@ async def test_update_client(
     updated_client["id"] = created_client["id"]
     assert response_get.status_code == 200
     assert response_get.json() == updated_client
-    await compare_db_client_to_payload(updated_client, db_session)
+    await utils.compare_db_client_to_payload(updated_client, db_session)
 
 
 @pytest.mark.asyncio
@@ -141,7 +136,7 @@ async def test_update_client(
     [
         {"client_name": "new_name"},
         {"client_surname": "new_surname"},
-        {"birthday": random_date()},
+        {"birthday": utils.random_date()},
         {"gender": None},
         {
             "address": {
@@ -161,7 +156,7 @@ async def test_update_client_field(
     update: dict,
     db_session: AsyncSession,
 ) -> None:
-    await create_clients(client, client_payloads)
+    await utils.create_clients(client, client_payloads)
     created_client = client_payloads[0]
     if "gender" in update:
         update["gender"] = "M" if created_client["gender"] == "F" else "F"
@@ -172,7 +167,7 @@ async def test_update_client_field(
         created_client.update(update)
     assert response_get.status_code == 200
     assert response_get.json() == created_client
-    await compare_db_client_to_payload(created_client, db_session)
+    await utils.compare_db_client_to_payload(created_client, db_session)
 
 
 @pytest.mark.asyncio
@@ -182,9 +177,9 @@ async def test_delete_client(
     client_payloads: List[dict],
     db_session: AsyncSession,
 ) -> None:
-    await create_clients(client, client_payloads)
+    await utils.create_clients(client, client_payloads)
     for client_payload in client_payloads:
         response_get = await client.delete(f"client/{client_payload['id']}")
         assert response_get.status_code == 200
         assert response_get.json() is True
-        assert await get_client_from_db(client_payload["id"], db_session) is None
+        assert await utils.get_client_from_db(client_payload["id"], db_session) is None
