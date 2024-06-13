@@ -48,6 +48,7 @@ async def test_get_client_not_found(
         {"limit": 3},
         {"limit": 3, "offset": 4},
         {"offset": 8},
+        {},
     ],
 )
 async def test_get_all_clients_pagination(
