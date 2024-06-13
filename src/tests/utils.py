@@ -16,12 +16,12 @@ def random_date() -> str:
     return random_date.strftime("%Y-%m-%d")
 
 
-async def create_clients(
-    client: AsyncClient, client_payloads: List[dict]
+async def create_entities(
+    client: AsyncClient, path: str, payloads: List[dict]
 ) -> List[dict]:
-    for client_payload in client_payloads:
+    for client_payload in payloads:
         response_create = await client.post(
-            "client",
+            path,
             json=client_payload,
         )
         assert response_create.status_code == 201
