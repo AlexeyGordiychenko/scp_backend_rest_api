@@ -73,6 +73,7 @@ services:
     env_file: ".env_test"
     volumes:
       - ./shopAPI/:/shopAPI/shopAPI
+      - ./tests/:/shopAPI/tests
     environment:
       - POSTGRES_HOST=postgres-test
     depends_on:
