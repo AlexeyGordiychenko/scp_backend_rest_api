@@ -65,7 +65,7 @@ class BaseController(Generic[ModelType]):
         return create
 
     @Transactional()
-    async def update(self, model: ModelType, attributes: dict[str, Any]) -> ModelType:
+    async def update(self, model: ModelType, model_update: ModelType) -> ModelType:
         """
         Updates an Object in the DB.
 
@@ -73,7 +73,9 @@ class BaseController(Generic[ModelType]):
         :param attributes: The attributes to create the object with.
         :return: The updated object.
         """
-        update = await self.repository.update(model, attributes)
+        update = await self.repository.update(
+            model, model_update.model_dump(exclude_unset=True)
+        )
         return update
 
     @Transactional()

@@ -68,10 +68,7 @@ async def update_client_route(
     data: ClientUpdate,
     controller: ClientController = Depends(),
 ):
-    return await controller.update(
-        await controller.get_by_id(id=id),
-        attributes=data.model_dump(exclude_unset=True),
-    )
+    return await controller.update(await controller.get_by_id(id=id), data)
 
 
 @router.delete(
