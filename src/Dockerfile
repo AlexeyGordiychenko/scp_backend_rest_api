@@ -26,6 +26,8 @@ WORKDIR /shopAPI
 
 COPY . /shopAPI/
 
-RUN mkdir -p /shopAPI/htmlcov
-RUN chown -R appuser:appuser /shopAPI/htmlcov
-RUN chmod 755 /shopAPI/htmlcov
+RUN if [ "$ENV" = "test" ]; then \
+    mkdir -p /shopAPI/htmlcov; \
+    chown -R appuser:appuser /shopAPI/htmlcov; \
+    chmod 755 /shopAPI/htmlcov; \
+    fi;
