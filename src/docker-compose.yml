@@ -13,7 +13,6 @@ x-app-base: &app-base
   build:
     context: .
     dockerfile: Dockerfile
-  restart: always
 
 services:
   postgres-dev:
