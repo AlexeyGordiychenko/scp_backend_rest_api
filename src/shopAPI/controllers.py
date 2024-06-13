@@ -1,12 +1,11 @@
 from typing import Any, Generic, List, Type, TypeVar
 from uuid import UUID
-
 from fastapi import Depends, HTTPException
 from pydantic import BaseModel
-
 from sqlmodel import SQLModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from shopAPI.database import Transactional
+from shopAPI.database import Transactional, get_session
 from shopAPI.models import Client
 from shopAPI.repositories import BaseRepository, ClientRepository
 
@@ -104,8 +103,8 @@ class BaseController(Generic[ModelType]):
 
 
 class ClientController(BaseController[Client]):
-    def __init__(self, repository: ClientRepository = Depends()):
-        super().__init__(model=Client, repository=repository)
+    def __init__(self, session: AsyncSession = Depends(get_session)):
+        super().__init__(model=Client, repository=ClientRepository(session=session))
 
     async def get_by_id(self, id: UUID) -> ModelType:
         return await super().get_by_id(id=id, join_={"address"})
