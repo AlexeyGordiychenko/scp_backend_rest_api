@@ -5,4 +5,4 @@ set -e
 alembic upgrade head
 
 # Run tests
-python -m pytest -s -vv --cov=shopAPI --cov-report=html:./htmlcov --cov-report=term --color=yes -p no:cacheprovider
+python -m pytest -s -vv --cov=shopAPI --cov-report=html:./shopAPI/htmlcov --cov-report=term --color=yes -p no:cacheprovider

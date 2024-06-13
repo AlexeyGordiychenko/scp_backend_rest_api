@@ -1,5 +1,5 @@
 Dockerfile
-*.env
+*.env*
 *.md
 *.pyc
 *.pyo
@@ -10,3 +10,7 @@ Makefile
 .venv
 .dockerignore
 docker-compose.yml
+.coverage
+.gitkeep
+*.sql
+htmlcov

@@ -43,7 +43,8 @@ services:
       - APP_PORT=${APP_PORT}
       - APP_HOST=${APP_HOST}
     volumes:
-      - ./:/shopAPI/
+      - ./shopAPI/:/shopAPI/shopAPI
+      - ./main.py:/shopAPI/main.py
     ports:
       - ${APP_PORT}:${APP_PORT}
     expose:
@@ -68,14 +69,13 @@ services:
     <<: *app-base
     entrypoint: ["scripts/start-test.sh"]
     build:
-      context: ./
       args:
         ENV: test
     env_file: ".env_test"
+    volumes:
+      - ./shopAPI/:/shopAPI/shopAPI
     environment:
       - POSTGRES_HOST=postgres-test
-    volumes:
-      - ./:/shopAPI/
     depends_on:
       postgres-test:
         condition: service_healthy
