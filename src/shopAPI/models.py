@@ -38,11 +38,8 @@ class AddressBase(SQLModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class Address(AddressBase, table=True):
+class Address(AddressBase, IdMixin, table=True):
     __tablename__ = "address"
-    client_id: UUID | None = Field(
-        primary_key=True, index=True, nullable=False, foreign_key="client.id"
-    )
     client: "Client" = Relationship(back_populates="address")
 
 
@@ -67,6 +64,7 @@ class ClientBase(SQLModel):
 
 class Client(IdMixin, TimestampMixin, ClientBase, table=True):
     __tablename__ = "client"
+    address_id: UUID | None = Field(foreign_key="address.id")
     address: Address | None = Relationship(
         sa_relationship_kwargs={"cascade": "all"}, back_populates="client"
     )
