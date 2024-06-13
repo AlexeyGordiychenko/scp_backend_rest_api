@@ -6,7 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from sqlmodel import select
 
-from shopAPI.models import Client, ClientResponseWithAddress
+from shopAPI.models import (
+    Client,
+    ClientResponseWithAddress,
+    Supplier,
+    SupplierResponseWithAddress,
+)
 
 
 def random_date() -> str:
@@ -45,4 +50,25 @@ async def compare_db_client_to_payload(client_payload: dict, db_session: AsyncSe
     assert (
         ClientResponseWithAddress.model_validate(db_client).model_dump(mode="json")
         == client_payload
+    )
+
+
+async def get_supplier_from_db(id: str, db_session: AsyncSession):
+    return (
+        await db_session.scalars(
+            select(Supplier)
+            .where(Supplier.id == id)
+            .options(joinedload(Supplier.address))
+        )
+    ).one_or_none()
+
+
+async def compare_db_supplier_to_payload(
+    supplier_payload: dict, db_session: AsyncSession
+):
+    db_supplier = await get_supplier_from_db(supplier_payload["id"], db_session)
+    assert db_supplier is not None
+    assert (
+        SupplierResponseWithAddress.model_validate(db_supplier).model_dump(mode="json")
+        == supplier_payload
     )

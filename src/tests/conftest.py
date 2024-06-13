@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import AsyncGenerator, List
 import pytest
 from httpx import AsyncClient, ASGITransport
-from shopAPI.server import app
 
+from shopAPI.server import app
 import shopAPI.database as database
 from tests.utils import random_date
 
@@ -41,6 +41,22 @@ def client_payloads(request) -> List[dict]:
             "client_surname": f"test_surname_{i}",
             "birthday": random_date(),
             "gender": random.choice(["M", "F"]),
+            "address": {
+                "country": f"test_country_{i}",
+                "city": f"test_city_{i}",
+                "street": f"test_street_{i}",
+            },
+        }
+        for i in range(request.param)
+    ]
+
+
+@pytest.fixture(scope="function")
+def supplier_payloads(request) -> List[dict]:
+    return [
+        {
+            "name": f"test_name_{i}",
+            "phone_number": f"+791222{format(random.randint(1, 99998), '05d')}",
             "address": {
                 "country": f"test_country_{i}",
                 "city": f"test_city_{i}",

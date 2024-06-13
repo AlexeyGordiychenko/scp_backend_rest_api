@@ -6,7 +6,7 @@ from sqlalchemy.sql.expression import select
 from sqlalchemy.orm import joinedload
 from sqlmodel import SQLModel
 
-from shopAPI.models import Client
+from shopAPI.models import Client, Supplier
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
 
@@ -279,5 +279,34 @@ class ClientRepository(BaseRepository[Client]):
         :return: Query.
         """
         return query.options(joinedload(Client.address)).execution_options(
+            contains_joined_collection=True
+        )
+
+
+class SupplierRepository(BaseRepository[Supplier]):
+    """
+    Supplier repository provides all the database operations for the Supplier model.
+    """
+
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(model=Supplier, session=session)
+
+    async def get_all(
+        self, name: str, offset: int, limit: int
+    ) -> List[Supplier] | None:
+        query = self._query(join_={"address"})
+        if name:
+            query = query.filter(Supplier.name == name)
+        query = query.offset(offset).limit(limit)
+        return await self._all_unique(query)
+
+    def _join_address(self, query: Select) -> Select:
+        """
+        Join address.
+
+        :param query: Query.
+        :return: Query.
+        """
+        return query.options(joinedload(Supplier.address)).execution_options(
             contains_joined_collection=True
         )

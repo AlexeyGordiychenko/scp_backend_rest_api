@@ -6,4 +6,6 @@ asyncpg
 SQLAlchemy
 uuid7
 pydantic-settings
+pydantic-extra-types
 alembic
+phonenumbers

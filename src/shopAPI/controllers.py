@@ -6,8 +6,8 @@ from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shopAPI.database import Transactional, get_session
-from shopAPI.models import Client
-from shopAPI.repositories import BaseRepository, ClientRepository
+from shopAPI.models import Client, Supplier
+from shopAPI.repositories import BaseRepository, ClientRepository, SupplierRepository
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
 
@@ -117,5 +117,18 @@ class ClientController(BaseController[Client]):
         db_objs = await self.repository.get_all(
             name=name, surname=surname, offset=offset, limit=limit
         )
+
+        return db_objs
+
+
+class SupplierController(BaseController[Supplier]):
+    def __init__(self, session: AsyncSession = Depends(get_session)):
+        super().__init__(model=Supplier, repository=SupplierRepository(session=session))
+
+    async def get_by_id(self, id: UUID) -> ModelType:
+        return await super().get_by_id(id=id, join_={"address"})
+
+    async def get_all(self, name: str, offset: int, limit: int) -> List[ModelType]:
+        db_objs = await self.repository.get_all(name=name, offset=offset, limit=limit)
 
         return db_objs

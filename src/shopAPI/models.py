@@ -3,8 +3,11 @@ from pydantic import ConfigDict
 from sqlmodel import Field, Relationship, SQLModel
 from datetime import date
 from typing import Optional
+from pydantic_extra_types.phone_numbers import PhoneNumber
 
 from shopAPI.database import IdMixin, TimestampMixin
+
+PhoneNumber.phone_format = "E164"
 
 
 class ApiStatus(SQLModel):
@@ -41,6 +44,7 @@ class AddressBase(SQLModel):
 class Address(AddressBase, IdMixin, table=True):
     __tablename__ = "address"
     client: "Client" = Relationship(back_populates="address")
+    supplier: "Supplier" = Relationship(back_populates="address")
 
 
 class AddressUpdate(AddressBase):
@@ -100,4 +104,50 @@ class ClientResponse(ClientBase):
 
 
 class ClientResponseWithAddress(ClientResponse):
+    address: AddressResponse | None = None
+
+
+class SupplierBase(SQLModel):
+    name: str = Field(nullable=False)
+    phone_number: PhoneNumber = Field(nullable=False)
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class Supplier(IdMixin, SupplierBase, table=True):
+    __tablename__ = "supplier"
+    address_id: UUID | None = Field(foreign_key="address.id")
+    address: Address | None = Relationship(
+        sa_relationship_kwargs={"cascade": "all"}, back_populates="supplier"
+    )
+
+    def __init__(self, **kwargs):
+        address_data = kwargs.pop("address", None)
+        super().__init__(**kwargs)
+        if address_data:
+            self.address = Address(**address_data)
+
+    def __setattr__(self, name, value):
+        if name == "address" and isinstance(value, dict):
+            for attr, val in value.items():
+                setattr(self.address, attr, val)
+        else:
+            super().__setattr__(name, value)
+
+
+class SupplierCreate(SupplierBase):
+    address: AddressBase
+
+
+class SupplierUpdate(SupplierBase):
+    name: Optional[str] = None
+    phone_number: Optional[PhoneNumber] = None
+    address: Optional[AddressUpdate] = None
+
+
+class SupplierResponse(SupplierBase):
+    id: UUID
+
+
+class SupplierResponseWithAddress(SupplierResponse):
     address: AddressResponse | None = None
