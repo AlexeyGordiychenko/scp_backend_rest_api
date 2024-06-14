@@ -1,6 +1,7 @@
+import enum
 from uuid import UUID
 from pydantic import ConfigDict
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, Relationship, SQLModel, Column, Enum
 from datetime import date
 from typing import Optional
 from pydantic_extra_types.phone_numbers import PhoneNumber
@@ -8,6 +9,13 @@ from pydantic_extra_types.phone_numbers import PhoneNumber
 from shopAPI.database import IdMixin, TimestampMixin
 
 PhoneNumber.phone_format = "E164"
+
+
+class Gender(str, enum.Enum):
+    female = "female"
+    male = "male"
+    other = "other"
+    not_given = "not given"
 
 
 class ApiStatus(SQLModel):
@@ -60,8 +68,7 @@ class ClientBase(SQLModel):
     client_name: str = Field(nullable=False)
     client_surname: str = Field(nullable=False)
     birthday: date = Field(nullable=False)
-    # TODO: Add gender constraint
-    gender: str = Field(nullable=False, regex="^(M|F)$")
+    gender: Gender = Field(sa_column=Column(Enum(Gender), nullable=False))
 
     model_config = ConfigDict(extra="forbid")
 
@@ -95,7 +102,7 @@ class ClientUpdate(ClientBase):
     client_name: Optional[str] = None
     client_surname: Optional[str] = None
     birthday: Optional[date] = None
-    gender: Optional[str] = None
+    gender: Optional[Gender] = None
     address: Optional[AddressUpdate] = None
 
 

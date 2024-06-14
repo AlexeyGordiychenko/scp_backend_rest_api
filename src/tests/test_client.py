@@ -1,9 +1,11 @@
+import random
 from typing import List
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid_extensions import uuid7
 
+from shopAPI.models import Gender
 import tests.utils as utils
 
 
@@ -169,7 +171,9 @@ async def test_update_client_field(
     await utils.create_entities(client, "client", client_payloads)
     created_client = client_payloads[0]
     if "gender" in update:
-        update["gender"] = "M" if created_client["gender"] == "F" else "F"
+        gender_list = list(Gender)
+        gender_list.remove(created_client["gender"])
+        update["gender"] = random.choice(gender_list)
     response_get = await client.patch(f"client/{created_client['id']}", json=update)
     if "address" in update:
         created_client["address"].update(update["address"])

@@ -4,6 +4,7 @@ from typing import AsyncGenerator, List
 import pytest
 from httpx import AsyncClient, ASGITransport
 
+from shopAPI.models import Gender
 from shopAPI.server import app
 import shopAPI.database as database
 from tests.utils import random_date
@@ -40,7 +41,7 @@ def client_payloads(request) -> List[dict]:
             "client_name": f"test_name_{i}",
             "client_surname": f"test_surname_{i}",
             "birthday": random_date(),
-            "gender": random.choice(["M", "F"]),
+            "gender": random.choice(list(Gender)),
             "address": {
                 "country": f"test_country_{i}",
                 "city": f"test_city_{i}",
