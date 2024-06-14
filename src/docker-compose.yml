@@ -43,6 +43,8 @@ services:
       - APP_HOST=${APP_HOST}
     volumes:
       - ./shopAPI/:/shopAPI/shopAPI
+      - ./alembic/:/shopAPI/alembic
+      - ./scripts/:/shopAPI/scripts
       - ./main.py:/shopAPI/main.py
     ports:
       - ${APP_PORT}:${APP_PORT}
@@ -73,7 +75,10 @@ services:
     env_file: ".env_test"
     volumes:
       - ./shopAPI/:/shopAPI/shopAPI
+      - ./alembic/:/shopAPI/alembic
+      - ./scripts/:/shopAPI/scripts
       - ./tests/:/shopAPI/tests
+      - ./pytest.ini:/shopAPI/pytest.ini
     environment:
       - POSTGRES_HOST=postgres-test
     depends_on:
