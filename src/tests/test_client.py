@@ -3,7 +3,6 @@ from typing import List
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
-from uuid_extensions import uuid7
 
 from shopAPI.models import Gender
 import tests.utils as utils
@@ -32,14 +31,6 @@ async def test_get_client(
         response_get = await client.get(f"client/{client_payload['id']}")
         assert response_get.status_code == 200
         assert response_get.json() == client_payload
-
-
-@pytest.mark.asyncio
-async def test_get_client_not_found(
-    client: AsyncClient,
-) -> None:
-    response_get = await client.get(f"client/{uuid7()}")
-    assert response_get.status_code == 404
 
 
 @pytest.mark.asyncio

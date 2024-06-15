@@ -1,6 +1,7 @@
 from typing import List
 import pytest
 from httpx import AsyncClient
+from uuid_extensions import uuid7
 
 import tests.utils as utils
 
@@ -65,3 +66,11 @@ async def test_post_client_fields_absence(
         json=client_payload,
     )
     await utils.check_422_error(response_create, field)
+
+
+@pytest.mark.asyncio
+async def test_get_client_not_found(
+    client: AsyncClient,
+) -> None:
+    response_get = await client.get(f"client/{uuid7()}")
+    assert response_get.status_code == 404
