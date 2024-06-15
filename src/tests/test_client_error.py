@@ -33,3 +33,35 @@ async def test_post_client_birthday(
         json=client_payload,
     )
     await utils.check_422_error(response_create, "birthday")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("client_payloads", [1], indirect=True)
+@pytest.mark.parametrize(
+    "field",
+    (
+        "client_name",
+        "client_surname",
+        "birthday",
+        "gender",
+        "address",
+        "address.country",
+        "address.city",
+        "address.street",
+    ),
+)
+async def test_post_client_fields_absence(
+    client: AsyncClient, client_payloads: List[dict], field: str
+) -> None:
+    client_payload = client_payloads[0]
+    if "." in field:
+        field, subfield = field.split(".")
+        client_payload[field].pop(subfield)
+        field = subfield
+    else:
+        client_payload.pop(field)
+    response_create = await client.post(
+        "client",
+        json=client_payload,
+    )
+    await utils.check_422_error(response_create, field)
