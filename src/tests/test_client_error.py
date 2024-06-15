@@ -82,3 +82,19 @@ async def test_get_client_incorrect_uuid(
 ) -> None:
     response_get = await client.get("client/123")
     await utils.check_422_error(response_get, "id")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "params",
+    [
+        {"limit": "limit"},
+        {"offset": "offset"},
+    ],
+)
+async def test_get_all_clients_offset_limit(
+    client: AsyncClient,
+    params: dict,
+) -> None:
+    response_get = await client.get("client/all", params=params)
+    await utils.check_422_error(response_get, next(iter(params)))
