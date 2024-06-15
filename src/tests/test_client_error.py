@@ -74,3 +74,11 @@ async def test_get_client_not_found(
 ) -> None:
     response_get = await client.get(f"client/{uuid7()}")
     assert response_get.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_get_client_incorrect_uuid(
+    client: AsyncClient,
+) -> None:
+    response_get = await client.get("client/123")
+    await utils.check_422_error(response_get, "id")
