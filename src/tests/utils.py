@@ -1,7 +1,7 @@
 from datetime import datetime
 import random
 from typing import List
-from httpx import AsyncClient
+from httpx import AsyncClient, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from sqlmodel import select
@@ -72,3 +72,14 @@ async def compare_db_supplier_to_payload(
         SupplierResponseWithAddress.model_validate(db_supplier).model_dump(mode="json")
         == supplier_payload
     )
+
+
+async def check_422_error(response: Response, field: str):
+    assert response.status_code == 422
+    response_json = response.json()
+    assert "detail" in response_json
+    detail = response_json["detail"]
+    assert len(detail) == 1
+    loc = detail[0]["loc"]
+    assert isinstance(loc, list)
+    assert loc[-1] == field
