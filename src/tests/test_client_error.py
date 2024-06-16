@@ -98,3 +98,39 @@ async def test_get_all_clients_offset_limit(
 ) -> None:
     response_get = await client.get("client/all", params=params)
     await utils.check_422_error(response_get, next(iter(params)))
+
+
+@pytest.mark.asyncio
+async def test_update_client_incorrect_uuid(
+    client: AsyncClient,
+) -> None:
+    response_patch = await client.patch("client/123", json={"client_name": "test"})
+    await utils.check_422_error(response_patch, "id")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("client_payloads", [1], indirect=True)
+@pytest.mark.parametrize("invalid_gender", ("test",))
+async def test_update_client_invalid_gender(
+    client: AsyncClient, client_payloads: List[dict], invalid_gender: str
+) -> None:
+    await utils.create_entities(client, "client", client_payloads)
+    created_client = client_payloads[0]
+    response_patch = await client.patch(
+        f"client/{created_client['id']}", json={"gender": invalid_gender}
+    )
+    await utils.check_422_error(response_patch, "gender")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("client_payloads", [1], indirect=True)
+@pytest.mark.parametrize("invalid_birthday", ("1", "1-1-2024 11:11:11"))
+async def test_update_client_invalid_birthday(
+    client: AsyncClient, client_payloads: List[dict], invalid_birthday: str
+) -> None:
+    await utils.create_entities(client, "client", client_payloads)
+    created_client = client_payloads[0]
+    response_patch = await client.patch(
+        f"client/{created_client['id']}", json={"birthday": invalid_birthday}
+    )
+    await utils.check_422_error(response_patch, "birthday")
