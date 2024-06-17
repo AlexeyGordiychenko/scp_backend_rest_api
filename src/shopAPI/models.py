@@ -116,7 +116,9 @@ class ClientResponseWithAddress(ClientResponse):
 
 class SupplierBase(SQLModel):
     name: str = Field(nullable=False)
-    phone_number: PhoneNumber = Field(nullable=False)
+    phone_number: PhoneNumber = Field(
+        nullable=False, schema_extra={"json_schema_extra": {"example": "+12124567890"}}
+    )
 
     model_config = ConfigDict(extra="forbid")
 
