@@ -32,7 +32,9 @@ class BaseController(Generic[ModelType]):
             field="id", value=id, join_=join_, unique=True
         )
         if not db_obj:
-            raise HTTPException(status_code=404, detail="Client not found")
+            raise HTTPException(
+                status_code=404, detail=f"{self.model_class.__name__} not found"
+            )
 
         return db_obj
 
