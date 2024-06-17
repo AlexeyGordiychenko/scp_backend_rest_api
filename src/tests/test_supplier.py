@@ -10,9 +10,7 @@ import tests.utils as utils
 @pytest.mark.asyncio
 @pytest.mark.parametrize("supplier_payloads", [1, 2], indirect=True)
 async def test_post_supplier(
-    client: AsyncClient,
-    supplier_payloads: List[dict],
-    db_session: AsyncSession,
+    client: AsyncClient, supplier_payloads: List[dict], db_session: AsyncSession
 ) -> None:
     await utils.create_entities(client, "supplier", supplier_payloads)
     for supplier_payload in supplier_payloads:
@@ -21,10 +19,7 @@ async def test_post_supplier(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("supplier_payloads", [1, 2], indirect=True)
-async def test_get_supplier(
-    client: AsyncClient,
-    supplier_payloads: List[dict],
-) -> None:
+async def test_get_supplier(client: AsyncClient, supplier_payloads: List[dict]) -> None:
     await utils.create_entities(client, "supplier", supplier_payloads)
     for supplier_payload in supplier_payloads:
         response_get = await client.get(f"supplier/{supplier_payload['id']}")
@@ -33,9 +28,7 @@ async def test_get_supplier(
 
 
 @pytest.mark.asyncio
-async def test_get_supplier_not_found(
-    client: AsyncClient,
-) -> None:
+async def test_get_supplier_not_found(client: AsyncClient) -> None:
     response_get = await client.get(f"supplier/{uuid7()}")
     assert response_get.status_code == 404
 
@@ -43,18 +36,10 @@ async def test_get_supplier_not_found(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("supplier_payloads", [10, 15], indirect=True)
 @pytest.mark.parametrize(
-    "params",
-    [
-        {"limit": 3},
-        {"limit": 3, "offset": 4},
-        {"offset": 8},
-        {},
-    ],
+    "params", [{"limit": 3}, {"limit": 3, "offset": 4}, {"offset": 8}, {}]
 )
 async def test_get_all_suppliers_pagination(
-    client: AsyncClient,
-    supplier_payloads: List[dict],
-    params: dict,
+    client: AsyncClient, supplier_payloads: List[dict], params: dict
 ) -> None:
     await utils.create_entities(client, "supplier", supplier_payloads)
     offset = params.get("offset", 0)
@@ -69,16 +54,9 @@ async def test_get_all_suppliers_pagination(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("supplier_payloads", [1, 2], indirect=True)
-@pytest.mark.parametrize(
-    "params_template",
-    [
-        {"name": "name"},
-    ],
-)
+@pytest.mark.parametrize("params_template", [{"name": "name"}])
 async def test_get_all_by_fields(
-    client: AsyncClient,
-    supplier_payloads: List[dict],
-    params_template: dict,
+    client: AsyncClient, supplier_payloads: List[dict], params_template: dict
 ) -> None:
     await utils.create_entities(client, "supplier", supplier_payloads)
     for supplier_payload in supplier_payloads:
@@ -94,16 +72,9 @@ async def test_get_all_by_fields(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("supplier_payloads", [2], indirect=True)
-@pytest.mark.parametrize(
-    "params_template",
-    [
-        {"name": "name"},
-    ],
-)
+@pytest.mark.parametrize("params_template", [{"name": "name"}])
 async def test_get_all_by_fields_double(
-    client: AsyncClient,
-    supplier_payloads: List[dict],
-    params_template: dict,
+    client: AsyncClient, supplier_payloads: List[dict], params_template: dict
 ) -> None:
     for value in params_template.values():
         supplier_payloads[1][value] = supplier_payloads[0][value]
@@ -122,33 +93,27 @@ async def test_get_all_by_fields_double(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("supplier_payloads", [2], indirect=True)
-async def test_update_supplier(
-    client: AsyncClient,
-    supplier_payloads: List[dict],
-    db_session: AsyncSession,
+async def test_patch_supplier(
+    client: AsyncClient, supplier_payloads: List[dict], db_session: AsyncSession
 ) -> None:
     updated_supplier = supplier_payloads.pop()
     await utils.create_entities(client, "supplier", supplier_payloads)
     created_supplier = supplier_payloads[0]
-    response_get = await client.patch(
+    response_patch = await client.patch(
         f"supplier/{created_supplier['id']}", json=updated_supplier
     )
     updated_supplier["id"] = created_supplier["id"]
-    assert response_get.status_code == 200
-    assert response_get.json() == updated_supplier
+    assert response_patch.status_code == 200
+    assert response_patch.json() == updated_supplier
     await utils.compare_db_supplier_to_payload(updated_supplier, db_session)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("supplier_payloads", [1], indirect=True)
 @pytest.mark.parametrize(
-    "update",
-    [
-        {"name": "new_name"},
-        {"phone_number": "+79999999999"},
-    ],
+    "update", [{"name": "new_name"}, {"phone_number": "+79999999999"}]
 )
-async def test_update_supplier_field(
+async def test_patch_supplier_field(
     client: AsyncClient,
     supplier_payloads: List[dict],
     update: dict,
@@ -156,25 +121,25 @@ async def test_update_supplier_field(
 ) -> None:
     await utils.create_entities(client, "supplier", supplier_payloads)
     created_supplier = supplier_payloads[0]
-    response_get = await client.patch(f"supplier/{created_supplier['id']}", json=update)
+    response_patch = await client.patch(
+        f"supplier/{created_supplier['id']}", json=update
+    )
     created_supplier.update(update)
-    assert response_get.status_code == 200
-    assert response_get.json() == created_supplier
+    assert response_patch.status_code == 200
+    assert response_patch.json() == created_supplier
     await utils.compare_db_supplier_to_payload(created_supplier, db_session)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("supplier_payloads", [1, 2], indirect=True)
 async def test_delete_supplier(
-    client: AsyncClient,
-    supplier_payloads: List[dict],
-    db_session: AsyncSession,
+    client: AsyncClient, supplier_payloads: List[dict], db_session: AsyncSession
 ) -> None:
     await utils.create_entities(client, "supplier", supplier_payloads)
     for supplier_payload in supplier_payloads:
-        response_get = await client.delete(f"supplier/{supplier_payload['id']}")
-        assert response_get.status_code == 200
-        assert response_get.json() is True
+        response_delete = await client.delete(f"supplier/{supplier_payload['id']}")
+        assert response_delete.status_code == 200
+        assert response_delete.json() is True
         assert (
             await utils.get_supplier_from_db(supplier_payload["id"], db_session) is None
         )

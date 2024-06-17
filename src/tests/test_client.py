@@ -11,9 +11,7 @@ import tests.utils as utils
 @pytest.mark.asyncio
 @pytest.mark.parametrize("client_payloads", [1, 2], indirect=True)
 async def test_post_client(
-    client: AsyncClient,
-    client_payloads: List[dict],
-    db_session: AsyncSession,
+    client: AsyncClient, client_payloads: List[dict], db_session: AsyncSession
 ) -> None:
     await utils.create_entities(client, "client", client_payloads)
     for client_payload in client_payloads:
@@ -22,10 +20,7 @@ async def test_post_client(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("client_payloads", [1, 2], indirect=True)
-async def test_get_client(
-    client: AsyncClient,
-    client_payloads: List[dict],
-) -> None:
+async def test_get_client(client: AsyncClient, client_payloads: List[dict]) -> None:
     await utils.create_entities(client, "client", client_payloads)
     for client_payload in client_payloads:
         response_get = await client.get(f"client/{client_payload['id']}")
@@ -36,13 +31,7 @@ async def test_get_client(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("client_payloads", [10, 15], indirect=True)
 @pytest.mark.parametrize(
-    "params",
-    [
-        {"limit": 3},
-        {"limit": 3, "offset": 4},
-        {"offset": 8},
-        {},
-    ],
+    "params", [{"limit": 3}, {"limit": 3, "offset": 4}, {"offset": 8}, {}]
 )
 async def test_get_all_clients_pagination(
     client: AsyncClient,
@@ -71,9 +60,7 @@ async def test_get_all_clients_pagination(
     ],
 )
 async def test_get_all_by_fields(
-    client: AsyncClient,
-    client_payloads: List[dict],
-    params_template: dict,
+    client: AsyncClient, client_payloads: List[dict], params_template: dict
 ) -> None:
     await utils.create_entities(client, "client", client_payloads)
     for client_payload in client_payloads:
@@ -96,9 +83,7 @@ async def test_get_all_by_fields(
     ],
 )
 async def test_get_all_by_fields_double(
-    client: AsyncClient,
-    client_payloads: List[dict],
-    params_template: dict,
+    client: AsyncClient, client_payloads: List[dict], params_template: dict
 ) -> None:
     for value in params_template.values():
         client_payloads[1][value] = client_payloads[0][value]
@@ -115,20 +100,18 @@ async def test_get_all_by_fields_double(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("client_payloads", [2], indirect=True)
-async def test_update_client(
-    client: AsyncClient,
-    client_payloads: List[dict],
-    db_session: AsyncSession,
+async def test_patch_client(
+    client: AsyncClient, client_payloads: List[dict], db_session: AsyncSession
 ) -> None:
     updated_client = client_payloads.pop()
     await utils.create_entities(client, "client", client_payloads)
     created_client = client_payloads[0]
-    response_get = await client.patch(
+    response_patch = await client.patch(
         f"client/{created_client['id']}", json=updated_client
     )
     updated_client["id"] = created_client["id"]
-    assert response_get.status_code == 200
-    assert response_get.json() == updated_client
+    assert response_patch.status_code == 200
+    assert response_patch.json() == updated_client
     await utils.compare_db_client_to_payload(updated_client, db_session)
 
 
@@ -153,7 +136,7 @@ async def test_update_client(
         {"address": {"street": "new_street"}},
     ],
 )
-async def test_update_client_field(
+async def test_patch_client_field(
     client: AsyncClient,
     client_payloads: List[dict],
     update: dict,
@@ -165,26 +148,24 @@ async def test_update_client_field(
         gender_list = list(Gender)
         gender_list.remove(created_client["gender"])
         update["gender"] = random.choice(gender_list)
-    response_get = await client.patch(f"client/{created_client['id']}", json=update)
+    response_patch = await client.patch(f"client/{created_client['id']}", json=update)
     if "address" in update:
         created_client["address"].update(update["address"])
     else:
         created_client.update(update)
-    assert response_get.status_code == 200
-    assert response_get.json() == created_client
+    assert response_patch.status_code == 200
+    assert response_patch.json() == created_client
     await utils.compare_db_client_to_payload(created_client, db_session)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("client_payloads", [1, 2], indirect=True)
 async def test_delete_client(
-    client: AsyncClient,
-    client_payloads: List[dict],
-    db_session: AsyncSession,
+    client: AsyncClient, client_payloads: List[dict], db_session: AsyncSession
 ) -> None:
     await utils.create_entities(client, "client", client_payloads)
     for client_payload in client_payloads:
-        response_get = await client.delete(f"client/{client_payload['id']}")
-        assert response_get.status_code == 200
-        assert response_get.json() is True
+        response_delete = await client.delete(f"client/{client_payload['id']}")
+        assert response_delete.status_code == 200
+        assert response_delete.json() is True
         assert await utils.get_client_from_db(client_payload["id"], db_session) is None
