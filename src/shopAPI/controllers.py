@@ -19,7 +19,9 @@ class BaseController(Generic[ModelType]):
         self.model_class = model
         self.repository = repository
 
-    async def get_by_id(self, id: UUID, join_: set[str] | None = None) -> ModelType:
+    async def get_by_id(
+        self, id: UUID, join_: set[str] | None = None, for_update: bool = False
+    ) -> ModelType:
         """
         Returns the model instance matching the id.
 
@@ -29,7 +31,7 @@ class BaseController(Generic[ModelType]):
         """
 
         db_obj = await self.repository.get_by(
-            field="id", value=id, join_=join_, unique=True
+            field="id", value=id, join_=join_, unique=True, for_update=for_update
         )
         if not db_obj:
             raise HTTPException(

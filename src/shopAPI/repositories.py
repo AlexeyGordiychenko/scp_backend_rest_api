@@ -69,6 +69,7 @@ class BaseRepository(Generic[ModelType]):
         value: Any,
         join_: set[str] | None = None,
         unique: bool = False,
+        for_update: bool = False,
     ) -> ModelType:
         """
         Returns the model instance matching the field and value.
@@ -80,7 +81,8 @@ class BaseRepository(Generic[ModelType]):
         """
         query = self._query(join_)
         query = await self._get_by(query, field, value)
-
+        if for_update:
+            query = query.with_for_update()
         if unique:
             return await self._one_or_none(query)
         if join_ is not None:
