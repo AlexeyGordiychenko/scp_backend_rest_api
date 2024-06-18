@@ -129,6 +129,7 @@ class Supplier(IdMixin, SupplierBase, table=True):
     address: Address | None = Relationship(
         sa_relationship_kwargs={"cascade": "all"}, back_populates="supplier"
     )
+    products: list["Product"] = Relationship(back_populates="supplier")
 
     def __init__(self, **kwargs):
         address_data = kwargs.pop("address", None)
@@ -160,3 +161,50 @@ class SupplierResponse(SupplierBase):
 
 class SupplierResponseWithAddress(SupplierResponse):
     address: AddressResponse | None = None
+
+
+class ProductBase(SQLModel):
+    name: str = Field(nullable=False)
+    category: str = Field(nullable=False)
+    price: float = Field(nullable=False)
+    available_stock: int = Field(nullable=False)
+    last_update_date: date = Field(nullable=False)
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class Product(IdMixin, ProductBase, table=True):
+    __tablename__ = "product"
+    supplier_id: UUID = Field(foreign_key="supplier.id")
+    supplier: Supplier | None = Relationship(back_populates="products")
+
+
+class ProductCreate(ProductBase):
+    supplier_id: UUID
+
+
+class ProductUpdate(ProductBase):
+    name: Optional[str] = None
+    category: Optional[str] = None
+    price: Optional[float] = None
+    available_stock: Optional[int] = None
+    last_update_date: Optional[date] = None
+    supplier_id: Optional[UUID] = None
+
+
+class ProductUpdateStock(SQLModel):
+    amount_to_reduce: int = Field(nullable=False, gt=0)
+    model_config = ConfigDict(extra="forbid")
+
+
+class ProductResponse(ProductBase):
+    id: UUID
+
+
+class ProductResponseWithSupplierId(ProductBase):
+    id: UUID
+    supplier_id: UUID
+
+
+class ProductResponseWithSupplier(ProductResponse):
+    supplier: SupplierResponse | None = None
