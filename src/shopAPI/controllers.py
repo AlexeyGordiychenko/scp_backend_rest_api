@@ -6,8 +6,13 @@ from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from shopAPI.database import Transactional, get_session
-from shopAPI.models import Client, Supplier
-from shopAPI.repositories import BaseRepository, ClientRepository, SupplierRepository
+from shopAPI.models import Client, Product, ProductUpdateStock, Supplier
+from shopAPI.repositories import (
+    BaseRepository,
+    ClientRepository,
+    ProductRepository,
+    SupplierRepository,
+)
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
 
@@ -131,6 +136,38 @@ class SupplierController(BaseController[Supplier]):
 
     async def get_by_id(self, id: UUID) -> ModelType:
         return await super().get_by_id(id=id, join_={"address"})
+
+    async def get_all(self, name: str, offset: int, limit: int) -> List[ModelType]:
+        db_objs = await self.repository.get_all(name=name, offset=offset, limit=limit)
+
+        return db_objs
+
+
+class ProductController(BaseController[Product]):
+    def __init__(
+        self,
+        session: AsyncSession = Depends(get_session),
+        supplier: SupplierController = Depends(),
+    ):
+        super().__init__(model=Product, repository=ProductRepository(session=session))
+        self.supplier = supplier
+
+    @Transactional()
+    async def create(self, model_create: Product) -> Product:
+        await self.supplier.get_by_id(model_create.supplier_id)
+        return await super().create(model_create)
+
+    @Transactional()
+    async def update(self, model: ModelType, model_update: ModelType) -> ModelType:
+        if model_update.supplier_id:
+            await self.supplier.get_by_id(model_update.supplier_id)
+        return await super().update(model, model_update)
+
+    async def get_by_id(self, id: UUID, for_update: bool = False) -> ModelType:
+        if for_update:
+            return await super().get_by_id(id=id, for_update=for_update)
+        else:
+            return await super().get_by_id(id=id, join_={"supplier"})
 
     async def get_all(self, name: str, offset: int, limit: int) -> List[ModelType]:
         db_objs = await self.repository.get_all(name=name, offset=offset, limit=limit)
