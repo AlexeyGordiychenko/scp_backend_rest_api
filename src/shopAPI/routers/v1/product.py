@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from shopAPI.models import (
     ProductCreate,
-    ProductResponseWithSupplier,
     ProductResponseWithSupplierId,
     ProductUpdate,
     ErrorMessage,
@@ -35,7 +34,7 @@ async def create_product_route(
     "/all",
     summary="Get all products with pagination.",
     status_code=status.HTTP_200_OK,
-    response_model=List[ProductResponseWithSupplier],
+    response_model=List[ProductResponseWithSupplierId],
 )
 async def get_products_all(
     name: str = Query(None, description="Product's name."),
@@ -50,7 +49,7 @@ async def get_products_all(
     "/{id}",
     summary="Get a product.",
     status_code=status.HTTP_200_OK,
-    response_model=ProductResponseWithSupplier,
+    response_model=ProductResponseWithSupplierId,
     responses={404: {"model": ErrorMessage}},
 )
 async def get_product_route(id: UUID, controller: ProductController = Depends()):

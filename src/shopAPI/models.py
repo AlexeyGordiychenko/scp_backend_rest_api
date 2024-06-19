@@ -203,7 +203,3 @@ class ProductResponse(ProductBase):
 
 class ProductResponseWithSupplierId(ProductResponse):
     supplier_id: UUID
-
-
-class ProductResponseWithSupplier(ProductResponse):
-    supplier: SupplierResponse | None = None
