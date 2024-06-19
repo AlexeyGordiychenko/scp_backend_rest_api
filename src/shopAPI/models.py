@@ -201,8 +201,7 @@ class ProductResponse(ProductBase):
     id: UUID
 
 
-class ProductResponseWithSupplierId(ProductBase):
-    id: UUID
+class ProductResponseWithSupplierId(ProductResponse):
     supplier_id: UUID
 
 
