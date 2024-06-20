@@ -66,3 +66,17 @@ def supplier_payloads(request) -> List[dict]:
         }
         for i in range(request.param)
     ]
+
+
+@pytest.fixture(scope="function")
+def product_payloads(request) -> List[dict]:
+    return [
+        {
+            "name": f"test_name_{i}",
+            "category": f"test_category_{i}",
+            "price": round(random.uniform(10, 100), 2),
+            "available_stock": random.randint(1, 1000),
+            "last_update_date": random_date(),
+        }
+        for i in range(request.param)
+    ]
