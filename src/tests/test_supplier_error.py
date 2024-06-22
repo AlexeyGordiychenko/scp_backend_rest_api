@@ -8,14 +8,19 @@ import tests.utils as utils
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("supplier_payloads", [1], indirect=True)
-@pytest.mark.parametrize("invalid_phone_number", ("test",))
-async def test_post_supplier_phone_number(
-    client: AsyncClient, supplier_payloads: List[dict], invalid_phone_number: str
+@pytest.mark.parametrize(
+    "invalid_field",
+    [
+        {"phone_number": "invalid_phone_number"},
+    ],
+)
+async def test_post_supplier_invalid_field(
+    client: AsyncClient, supplier_payloads: List[dict], invalid_field: dict
 ) -> None:
     supplier_payload = supplier_payloads[0]
-    supplier_payload["phone_number"] = invalid_phone_number
+    supplier_payload.update(invalid_field)
     response_create = await client.post("supplier", json=supplier_payload)
-    await utils.check_422_error(response_create, "phone_number")
+    await utils.check_422_error(response_create, next(iter(invalid_field)))
 
 
 @pytest.mark.asyncio
@@ -72,17 +77,22 @@ async def test_patch_supplier_incorrect_uuid(client: AsyncClient) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("supplier_payloads", [1], indirect=True)
-@pytest.mark.parametrize("invalid_phone_number", ("test",))
+@pytest.mark.parametrize(
+    "invalid_field",
+    [
+        {"phone_number": "invalid_phone_number"},
+    ],
+)
 async def test_patch_supplier_invalid_phone_number(
-    client: AsyncClient, supplier_payloads: List[dict], invalid_phone_number: str
+    client: AsyncClient, supplier_payloads: List[dict], invalid_field: dict
 ) -> None:
     await utils.create_entities(client, "supplier", supplier_payloads)
     created_supplier = supplier_payloads[0]
     response_patch = await client.patch(
         f"supplier/{created_supplier['id']}",
-        json={"phone_number": invalid_phone_number},
+        json=invalid_field,
     )
-    await utils.check_422_error(response_patch, "phone_number")
+    await utils.check_422_error(response_patch, next(iter(invalid_field)))
 
 
 @pytest.mark.asyncio
