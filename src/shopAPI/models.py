@@ -1,6 +1,7 @@
 import enum
 from uuid import UUID
 from pydantic import ConfigDict
+from sqlalchemy import LargeBinary
 from sqlmodel import Field, Relationship, SQLModel, Column, Enum
 from datetime import date
 from typing import Optional
@@ -177,6 +178,7 @@ class Product(IdMixin, ProductBase, table=True):
     __tablename__ = "product"
     supplier_id: UUID = Field(foreign_key="supplier.id")
     supplier: Supplier | None = Relationship(back_populates="products")
+    images: list["Image"] = Relationship(back_populates="product")
 
 
 class ProductCreate(ProductBase):
@@ -203,3 +205,31 @@ class ProductResponse(ProductBase):
 
 class ProductResponseWithSupplierId(ProductResponse):
     supplier_id: UUID
+
+
+class ImageBase(SQLModel):
+    image: bytes = Field(sa_column=Column(LargeBinary, nullable=False))
+    extension: str = Field(nullable=False)
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class Image(IdMixin, ImageBase, table=True):
+    __tablename__ = "image"
+    product_id: UUID = Field(foreign_key="product.id")
+    product: Product = Relationship(back_populates="images")
+
+
+class ImageCreate(ImageBase):
+    product_id: UUID
+
+
+class ImageUpdate(ImageBase): ...
+
+
+class ImageResponse(SQLModel):
+    id: UUID
+
+
+class ImageResponseWithProductId(ImageResponse):
+    product_id: UUID
