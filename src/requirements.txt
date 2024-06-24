@@ -9,3 +9,4 @@ pydantic-settings
 pydantic-extra-types
 alembic
 phonenumbers
+Pillow
