@@ -1,12 +1,13 @@
 from functools import reduce
 from typing import Any, Generic, List, Type, TypeVar
+from uuid import UUID
 from sqlalchemy import Select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select
 from sqlalchemy.orm import joinedload
 from sqlmodel import SQLModel
 
-from shopAPI.models import Client, Product, Supplier
+from shopAPI.models import Client, Image, Product, Supplier
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
 
@@ -339,3 +340,31 @@ class ProductRepository(BaseRepository[Product]):
         return query.options(joinedload(Product.supplier)).execution_options(
             contains_joined_collection=True
         )
+
+    def _join_images(self, query: Select) -> Select:
+        """
+        Join images.
+
+        :param query: Query.
+        :return: Query.
+        """
+        return query.options(joinedload(Product.images)).execution_options(
+            contains_joined_collection=True
+        )
+
+
+class ImageRepository(BaseRepository[Image]):
+    """
+    Image repository provides all the database operations for the Image model.
+    """
+
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(model=Image, session=session)
+
+    async def get_all(
+        self, product_id: UUID, offset: int, limit: int
+    ) -> List[Product] | None:
+        query = self._query()
+        query = query.filter(Image.product_id == product_id)
+        query = query.offset(offset).limit(limit)
+        return await self._all_unique(query)
