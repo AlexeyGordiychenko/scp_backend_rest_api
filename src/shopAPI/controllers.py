@@ -1,15 +1,24 @@
+import io
 from typing import Any, Generic, List, Type, TypeVar
 from uuid import UUID
+import zipfile
 from fastapi import Depends, HTTPException
 from pydantic import BaseModel
 from sqlmodel import SQLModel
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from PIL import Image as PILImage
 from shopAPI.database import Transactional, get_session
-from shopAPI.models import Client, Product, ProductUpdateStock, Supplier
+from shopAPI.models import (
+    Client,
+    Image,
+    Product,
+    ProductUpdateStock,
+    Supplier,
+)
 from shopAPI.repositories import (
     BaseRepository,
     ClientRepository,
+    ImageRepository,
     ProductRepository,
     SupplierRepository,
 )
@@ -173,3 +182,38 @@ class ProductController(BaseController[Product]):
         db_objs = await self.repository.get_all(name=name, offset=offset, limit=limit)
 
         return db_objs
+
+
+class ImageController(BaseController[Image]):
+    def __init__(
+        self,
+        session: AsyncSession = Depends(get_session),
+        product: ProductController = Depends(),
+    ):
+        super().__init__(model=Image, repository=ImageRepository(session=session))
+        self.product = product
+
+    @Transactional()
+    async def create(self, model_create: ModelType) -> ModelType:
+        await self.product.get_by_id(model_create.product_id)
+        try:
+            img = PILImage.open(io.BytesIO(model_create.image))
+            img.verify()
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid image")
+        return await super().create(model_create)
+
+    async def get_all_images_by_product_id(
+        self, product_id: UUID, offset: int, limit: int
+    ) -> List[ModelType]:
+        db_objs = await self.repository.get_all(
+            product_id=product_id, offset=offset, limit=limit
+        )
+
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, "w") as zf:
+            for image in db_objs:
+                zf.writestr(f"{image.id}.{image.extension}", image.image)
+        zip_buffer.seek(0)
+
+        return f"{product_id}.zip", zip_buffer.getvalue()
