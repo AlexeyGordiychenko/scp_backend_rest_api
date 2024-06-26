@@ -1,6 +1,7 @@
 from typing import List
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.responses import StreamingResponse
 
 from shopAPI.models import (
     ProductCreate,
@@ -9,7 +10,7 @@ from shopAPI.models import (
     ErrorMessage,
     ProductUpdateStock,
 )
-from shopAPI.controllers import ProductController
+from shopAPI.controllers import ImageController, ProductController
 
 router = APIRouter(
     prefix="/product",
@@ -54,6 +55,34 @@ async def get_products_all(
 )
 async def get_product_route(id: UUID, controller: ProductController = Depends()):
     return await controller.get_by_id(id=id)
+
+
+@router.get(
+    "/{id}/images",
+    summary="Get a product's images in a zip archive.",
+    status_code=status.HTTP_200_OK,
+    responses={
+        200: {
+            "content": {"application/octet-stream": {}},
+            "description": "Return the zip archive with images of a product.",
+        },
+        404: {"model": ErrorMessage},
+    },
+)
+async def get_product_images_route(
+    id: UUID,
+    offset: int = Query(0, ge=0, description="Offset for images pagination."),
+    limit: int = Query(5, gt=0, le=5, description="Number of images to return."),
+    controller: ImageController = Depends(),
+):
+    filename, images = await controller.get_all_images_by_product_id(
+        product_id=id, offset=offset, limit=limit
+    )
+    return StreamingResponse(
+        (images,),
+        media_type="application/octet-stream",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
 
 
 @router.patch(
