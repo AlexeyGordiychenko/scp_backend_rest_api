@@ -28,6 +28,7 @@ check-test:
 	docker compose exec postgres-test psql -U postgres -c "SELECT * FROM supplier;"
 	docker compose exec postgres-test psql -U postgres -c "SELECT * FROM product;"
 	docker compose exec postgres-test psql -U postgres -c "SELECT * FROM address;"
+	docker compose exec postgres-test psql -U postgres -c "SELECT id, product_id, extension FROM image;"
 
 generate-migration:
 	@read -p "Enter migration message: " message; \
