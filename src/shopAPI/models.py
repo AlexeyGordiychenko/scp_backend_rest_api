@@ -233,3 +233,7 @@ class ImageResponse(SQLModel):
 
 class ImageResponseWithProductId(ImageResponse):
     product_id: UUID
+
+
+class ImageResponseFull(ImageBase, ImageResponseWithProductId):
+    model_config = ConfigDict(extra="ignore")
