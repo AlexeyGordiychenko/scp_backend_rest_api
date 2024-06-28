@@ -1,3 +1,4 @@
+import os
 import random
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import AsyncGenerator, List
@@ -80,3 +81,18 @@ def product_payloads(request) -> List[dict]:
         }
         for i in range(request.param)
     ]
+
+
+@pytest.fixture(scope="function")
+def image_payloads(request) -> List[dict]:
+    images = []
+    for image in request.param:
+        filename = f"{os.path.dirname(__file__)}/data/{image}"
+        images.append(
+            {
+                "filename": filename,
+                "extension": image.split(".")[-1],
+                "buffer": open(filename, "rb"),
+            }
+        )
+    return images
