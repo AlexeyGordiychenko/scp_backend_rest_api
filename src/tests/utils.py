@@ -10,6 +10,8 @@ from sqlmodel import select
 from shopAPI.models import (
     Client,
     ClientResponseWithAddress,
+    Image,
+    ImageResponseFull,
     Product,
     ProductResponseWithSupplierId,
     Supplier,
@@ -72,6 +74,10 @@ async def get_product_from_db(id: str, db_session: AsyncSession):
     ).one_or_none()
 
 
+async def get_image_from_db(id: str, db_session: AsyncSession):
+    return (await db_session.scalars(select(Image).where(Image.id == id))).one_or_none()
+
+
 async def compare_db_supplier_to_payload(
     supplier_payload: dict, db_session: AsyncSession
 ):
@@ -114,3 +120,37 @@ async def create_products(
     ):
         product_payload["supplier_id"] = supplier_payload["id"]
     await create_entities(client, "product", product_payloads)
+
+
+async def compare_db_image_to_payload(
+    image_payload: ImageResponseFull, db_session: AsyncSession
+):
+    db_image = await get_image_from_db(image_payload.id, db_session)
+    assert db_image is not None
+    assert db_image.model_dump() == image_payload.model_dump()
+
+
+async def create_images(
+    client: AsyncClient,
+    supplier_payloads: List[dict],
+    product_payloads: List[dict],
+    image_payloads: List[dict],
+):
+    await create_products(client, supplier_payloads, product_payloads)
+    created_images = []
+    for image_payload in image_payloads:
+        response = await client.post(
+            "image",
+            files={"image": image_payload["buffer"]},
+            params={"product_id": product_payloads[0]["id"]},
+        )
+        assert response.status_code == 201
+        image_payload["buffer"].seek(0)
+        created_images.append(
+            ImageResponseFull(
+                **response.json(),
+                **image_payload,
+                image=image_payload["buffer"].read(),
+            )
+        )
+    return created_images
