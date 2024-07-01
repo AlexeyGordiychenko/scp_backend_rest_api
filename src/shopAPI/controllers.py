@@ -206,6 +206,7 @@ class ImageController(BaseController[Image]):
     async def get_all_images_by_product_id(
         self, product_id: UUID, offset: int, limit: int
     ) -> List[ModelType]:
+        await self.product.get_by_id(product_id)
         db_objs = await self.repository.get_all(
             product_id=product_id, offset=offset, limit=limit
         )
