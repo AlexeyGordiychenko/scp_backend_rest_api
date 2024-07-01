@@ -24,11 +24,7 @@ stop-test:
 	docker compose --profile test down
 
 check-test:
-	docker compose exec postgres-test psql -U postgres -c "SELECT * FROM client;"
-	docker compose exec postgres-test psql -U postgres -c "SELECT * FROM supplier;"
-	docker compose exec postgres-test psql -U postgres -c "SELECT * FROM product;"
-	docker compose exec postgres-test psql -U postgres -c "SELECT * FROM address;"
-	docker compose exec postgres-test psql -U postgres -c "SELECT id, product_id, extension FROM image;"
+	docker compose exec postgres-test psql -U postgres -c "SELECT * FROM client;SELECT * FROM supplier;SELECT * FROM product;SELECT * FROM address;SELECT id, product_id, extension FROM image;"
 
 generate-migration:
 	@read -p "Enter migration message: " message; \
