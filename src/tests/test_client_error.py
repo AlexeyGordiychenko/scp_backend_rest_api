@@ -101,6 +101,12 @@ async def test_patch_client_invalid_field(
 
 
 @pytest.mark.asyncio
+async def test_delete_client_not_found(client: AsyncClient) -> None:
+    response_delete = await client.delete(f"client/{uuid7()}")
+    assert response_delete.status_code == 404
+
+
+@pytest.mark.asyncio
 async def test_delete_client_incorrect_uuid(client: AsyncClient) -> None:
     response_delete = await client.delete("client/123")
     await utils.check_422_error(response_delete, "id")

@@ -96,6 +96,12 @@ async def test_patch_supplier_invalid_phone_number(
 
 
 @pytest.mark.asyncio
+async def test_delete_supplier_not_found(client: AsyncClient) -> None:
+    response_delete = await client.delete(f"supplier/{uuid7()}")
+    assert response_delete.status_code == 404
+
+
+@pytest.mark.asyncio
 async def test_delete_supplier_incorrect_uuid(client: AsyncClient) -> None:
     response_delete = await client.delete("supplier/123")
     await utils.check_422_error(response_delete, "id")
