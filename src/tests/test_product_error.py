@@ -71,7 +71,7 @@ async def test_post_product_fields_absence(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("product_payloads", [1], indirect=True)
-async def test_get_product_supplier_not_found(
+async def test_post_product_supplier_not_found(
     client: AsyncClient, product_payloads: List[dict]
 ) -> None:
     product_payload = product_payloads[0]
