@@ -20,12 +20,12 @@ services:
     <<: *postgres-base
     env_file: ".env"
     environment:
-      - POSTGRES_HOST=postgres-dev
-      - PGPORT=${POSTGRES_PORT}
+      - PGPORT=${DB_PORT}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+      - ${DB_PORT}:${DB_PORT}
     expose:
-      - ${POSTGRES_PORT}
+      - ${DB_PORT}
     volumes:
       - ./postgres/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/
       - pgdata-dev:/var/lib/postgresql/data
@@ -38,7 +38,7 @@ services:
     entrypoint: ["scripts/start-dev.sh"]
     env_file: ".env"
     environment:
-      - POSTGRES_HOST=postgres-dev
+      - DB_HOST=postgres-dev
       - APP_PORT=${APP_PORT}
       - APP_HOST=${APP_HOST}
     volumes:
@@ -61,7 +61,7 @@ services:
     <<: *postgres-base
     env_file: ".env"
     environment:
-      - POSTGRES_HOST=postgres-test
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     networks:
       - test
 
@@ -80,7 +80,7 @@ services:
       - ./tests/:/shopAPI/tests
       - ./pytest.ini:/shopAPI/pytest.ini
     environment:
-      - POSTGRES_HOST=postgres-test
+      - DB_HOST=postgres-test
     depends_on:
       postgres-test:
         condition: service_healthy

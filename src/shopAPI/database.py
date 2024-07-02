@@ -65,10 +65,10 @@ def prepare_session(bind: Union[AsyncEngine, AsyncConnection]) -> AsyncSession:
 
 
 engine = create_async_engine(
-    str(settings.POSTGRES_URI),
-    echo=settings.POSTGRES_ECHO,
+    str(settings.DB_URI),
+    echo=settings.DB_ECHO,
     future=True,
-    pool_size=settings.POSTGRES_POOL_SIZE,
+    pool_size=settings.DB_POOL_SIZE,
 )
 
 session = prepare_session(engine)
