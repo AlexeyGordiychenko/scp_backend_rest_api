@@ -12,7 +12,7 @@ RUN if [ "$ENV" = "test" ]; then \
 
 FROM python:3.11-slim AS production
 
-ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 COPY --from=builder /usr/local /usr/local
