@@ -100,21 +100,15 @@ class BaseRepository(Generic[ModelType]):
         """
         await self.session.delete(model)
 
-    def _query(
-        self,
-        join_: set[str] | None = None,
-        order_: dict | None = None,
-    ) -> Select:
+    def _query(self, join_: set[str] | None = None) -> Select:
         """
         Returns a callable that can be used to query the model.
 
         :param join_: The joins to make.
-        :param order_: The order of the results. (e.g desc, asc)
         :return: A callable that can be used to query the model.
         """
         query = select(self.model_class)
         query = self._optional_join(query, join_)
-        query = self._optional_ordered(query, order_)
 
         return query
 
@@ -132,72 +126,10 @@ class BaseRepository(Generic[ModelType]):
         result = await self.session.execute(query)
         return result.unique().scalars().all()
 
-    async def _first(self, query: Select) -> ModelType | None:
-        """
-        Returns the first result from the query.
-
-        :param query: The query to execute.
-        :return: The first model instance.
-        """
-        query = await self.session.scalars(query)
-        return query.first()
-
     async def _one_or_none(self, query: Select) -> ModelType | None:
         """Returns the first result from the query or None."""
         query = await self.session.scalars(query)
         return query.one_or_none()
-
-    async def _one(self, query: Select) -> ModelType:
-        """
-        Returns the first result from the query or raises NoResultFound.
-
-        :param query: The query to execute.
-        :return: The first model instance.
-        """
-        query = await self.session.scalars(query)
-        return query.one()
-
-    async def _count(self, query: Select) -> int:
-        """
-        Returns the count of the records.
-
-        :param query: The query to execute.
-        """
-        query = query.subquery()
-        query = await self.session.scalars(select(func.count()).select_from(query))
-        return query.one()
-
-    async def _sort_by(
-        self,
-        query: Select,
-        sort_by: str,
-        order: str | None = "asc",
-        model: Type[ModelType] | None = None,
-        case_insensitive: bool = False,
-    ) -> Select:
-        """
-        Returns the query sorted by the given column.
-
-        :param query: The query to sort.
-        :param sort_by: The column to sort by.
-        :param order: The order to sort by.
-        :param model: The model to sort.
-        :param case_insensitive: Whether to sort case insensitively.
-        :return: The sorted query.
-        """
-        model = model or self.model_class
-
-        order_column = None
-
-        if case_insensitive:
-            order_column = func.lower(getattr(model, sort_by))
-        else:
-            order_column = getattr(model, sort_by)
-
-        if order == "desc":
-            return query.order_by(order_column.desc())
-
-        return query.order_by(order_column.asc())
 
     async def _get_by(self, query: Select, field: str, value: Any) -> Select:
         """
@@ -225,24 +157,6 @@ class BaseRepository(Generic[ModelType]):
             raise TypeError("join_ must be a set")
 
         return reduce(self._add_join_to_query, join_, query)
-
-    def _optional_ordered(self, query: Select, order_: dict | None = None) -> Select:
-        """
-        Returns the query ordered by the given column.
-
-        :param query: The query to order.
-        :param order_: The order to make.
-        :return: The query ordered by the given column.
-        """
-        if order_:
-            if order_["asc"]:
-                for order in order_["asc"]:
-                    query = query.order_by(getattr(self.model_class, order).asc())
-            else:
-                for order in order_["desc"]:
-                    query = query.order_by(getattr(self.model_class, order).desc())
-
-        return query
 
     def _add_join_to_query(self, query: Select, join_: set[str]) -> Select:
         """
