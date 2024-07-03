@@ -1,33 +1,29 @@
-run-dev:
+all: run
+
+run:
 	docker compose --profile dev up -d
 
-run-dev-postgres:
+run-postgres:
 	docker compose --profile dev up -d postgres-dev
 
-build-dev:
+build:
 	docker compose --profile dev build
 
-build-test:
-	docker compose --profile test build
-
-stop-dev:
+stop:
 	docker compose --profile dev down
 
-restart-dev: stop-dev run-dev
+restart: stop run
 
-clear-dev:
+clear:
 	docker compose --profile dev down --volumes
 
-run-test:
+test:
 	docker compose run --rm -T app-test || true
-	$(MAKE) check-test
-	$(MAKE) stop-test
-
-stop-test:
+	docker compose exec postgres-test psql -U postgres -c "SELECT * FROM client;SELECT * FROM supplier;SELECT * FROM product;SELECT * FROM address;SELECT id, product_id, extension FROM image;"
 	docker compose --profile test down
 
-check-test:
-	docker compose exec postgres-test psql -U postgres -c "SELECT * FROM client;SELECT * FROM supplier;SELECT * FROM product;SELECT * FROM address;SELECT id, product_id, extension FROM image;"
+test-build:
+	docker compose --profile test build
 
 generate-migration:
 	@read -p "Enter migration message: " message; \
