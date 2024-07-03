@@ -5,4 +5,4 @@ set -e
 alembic upgrade head
 
 # Start the Uvicorn server
-exec uvicorn shopAPI.server:app --reload --host ${APP_HOST} --port ${APP_PORT}
+exec uvicorn shopAPI.server:app --reload --host ${APP_HOST:-0.0.0.0} --port ${APP_PORT:-8000}

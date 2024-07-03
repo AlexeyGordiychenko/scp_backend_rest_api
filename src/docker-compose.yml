@@ -20,12 +20,12 @@ services:
     <<: *postgres-base
     env_file: ".env"
     environment:
-      - PGPORT=${DB_PORT}
+      - PGPORT=${DB_PORT:-5432}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - ${DB_PORT:-5432}:${DB_PORT:-5432}
     expose:
-      - ${DB_PORT}
+      - ${DB_PORT:-5432}
     volumes:
       - ./postgres/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/
       - pgdata-dev:/var/lib/postgresql/data
@@ -39,17 +39,15 @@ services:
     env_file: ".env"
     environment:
       - DB_HOST=postgres-dev
-      - APP_PORT=${APP_PORT}
-      - APP_HOST=${APP_HOST}
     volumes:
       - ./shopAPI/:/shopAPI/shopAPI
       - ./alembic/:/shopAPI/alembic
       - ./scripts/:/shopAPI/scripts
       - ./main.py:/shopAPI/main.py
     ports:
-      - ${APP_PORT}:${APP_PORT}
+      - ${APP_PORT:-8000}:${APP_PORT:-8000}
     expose:
-      - ${APP_PORT}
+      - ${APP_PORT:-8000}
     depends_on:
       postgres-dev:
         condition: service_healthy
