@@ -5,7 +5,10 @@ run-dev-postgres:
 	docker compose --profile dev up -d postgres-dev
 
 build-dev:
-	docker compose --profile dev up -d --build
+	docker compose --profile dev build
+
+build-test:
+	docker compose --profile test build
 
 stop-dev:
 	docker compose --profile dev down
