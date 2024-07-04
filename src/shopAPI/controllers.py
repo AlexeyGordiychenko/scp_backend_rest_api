@@ -41,6 +41,7 @@ class BaseController(Generic[ModelType]):
 
         :param id: The id to match.
         :param join_: The joins to make.
+        :param for_update: Whether to lock the record for update.
         :return: The model instance.
         """
 
@@ -60,41 +61,38 @@ class BaseController(Generic[ModelType]):
         """
         Returns a list of records based on pagination params.
 
-        :param skip: The number of records to skip.
+        :param offset: The number of records to offset.
         :param limit: The number of records to return.
         :param join_: The joins to make.
         :return: A list of records.
         """
 
-        response = await self.repository.get_all(offset, limit, join_)
-        return response
+        return await self.repository.get_all(offset, limit, join_)
 
     @Transactional()
     async def create(self, model_create: ModelType) -> ModelType:
         """
         Creates a new Object in the DB.
 
-        :param attributes: The attributes to create the object with.
+        :param model_create: The model containing the attributes to create an entity with.
         :return: The created object.
         """
-        create = await self.repository.create(
+        return await self.repository.create(
             self.extract_attributes_from_schema(model_create)
         )
-        return create
 
     @Transactional()
     async def update(self, model: ModelType, model_update: ModelType) -> ModelType:
         """
         Updates an Object in the DB.
 
-        :param id: The id to match.
-        :param attributes: The attributes to create the object with.
+        :param model: The model to update.
+        :param model_update: The model containing the attributes to update.
         :return: The updated object.
         """
-        update = await self.repository.update(
+        return await self.repository.update(
             model, model_update.model_dump(exclude_unset=True)
         )
-        return update
 
     @Transactional()
     async def delete(self, model: ModelType) -> ResponseMessage:
@@ -102,7 +100,7 @@ class BaseController(Generic[ModelType]):
         Deletes the Object from the DB.
 
         :param model: The model to delete.
-        :return: True if the object was deleted, False otherwise.
+        :return: The response message.
         """
         await self.repository.delete(model)
         return ResponseMessage(detail="Deleted successfully.")
@@ -132,11 +130,9 @@ class ClientController(BaseController[Client]):
     async def get_all(
         self, name: str, surname: str, offset: int, limit: int
     ) -> List[ModelType]:
-        db_objs = await self.repository.get_all(
+        return await self.repository.get_all(
             name=name, surname=surname, offset=offset, limit=limit
         )
-
-        return db_objs
 
 
 class SupplierController(BaseController[Supplier]):
@@ -147,9 +143,7 @@ class SupplierController(BaseController[Supplier]):
         return await super().get_by_id(id=id, join_={"address"})
 
     async def get_all(self, name: str, offset: int, limit: int) -> List[ModelType]:
-        db_objs = await self.repository.get_all(name=name, offset=offset, limit=limit)
-
-        return db_objs
+        return await self.repository.get_all(name=name, offset=offset, limit=limit)
 
 
 class ProductController(BaseController[Product]):
@@ -179,9 +173,7 @@ class ProductController(BaseController[Product]):
             return await super().get_by_id(id=id, join_={"supplier"})
 
     async def get_all(self, name: str, offset: int, limit: int) -> List[ModelType]:
-        db_objs = await self.repository.get_all(name=name, offset=offset, limit=limit)
-
-        return db_objs
+        return await self.repository.get_all(name=name, offset=offset, limit=limit)
 
 
 class ImageController(BaseController[Image]):
