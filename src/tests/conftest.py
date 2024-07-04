@@ -36,7 +36,7 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 @pytest.fixture(scope="function")
-def client_payloads(request) -> List[dict]:
+def client_payloads(request: pytest.FixtureRequest) -> List[dict]:
     return [
         {
             "client_name": f"test_name_{i}",
@@ -54,7 +54,7 @@ def client_payloads(request) -> List[dict]:
 
 
 @pytest.fixture(scope="function")
-def supplier_payloads(request) -> List[dict]:
+def supplier_payloads(request: pytest.FixtureRequest) -> List[dict]:
     return [
         {
             "name": f"test_name_{i}",
@@ -70,7 +70,7 @@ def supplier_payloads(request) -> List[dict]:
 
 
 @pytest.fixture(scope="function")
-def product_payloads(request) -> List[dict]:
+def product_payloads(request: pytest.FixtureRequest) -> List[dict]:
     return [
         {
             "name": f"test_name_{i}",
@@ -84,7 +84,7 @@ def product_payloads(request) -> List[dict]:
 
 
 @pytest.fixture(scope="function")
-def image_payloads(request) -> List[dict]:
+def image_payloads(request: pytest.FixtureRequest) -> List[dict]:
     images = []
     for image in request.param:
         filename = f"{os.path.dirname(__file__)}/data/{image}"
