@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import StreamingResponse
@@ -86,7 +87,7 @@ async def update_supplier_route(
     "/{id}",
     summary="Delete a image.",
     status_code=status.HTTP_200_OK,
-    response_model=bool,
+    response_model=Optional[ResponseMessage],
 )
 async def delete_image_route(id: UUID, controller: ImageController = Depends()):
     return await controller.delete(await controller.get_by_id(id=id))

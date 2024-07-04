@@ -13,6 +13,7 @@ from shopAPI.models import (
     Image,
     Product,
     ProductUpdateStock,
+    ResponseMessage,
     Supplier,
 )
 from shopAPI.repositories import (
@@ -97,7 +98,7 @@ class BaseController(Generic[ModelType]):
         return update
 
     @Transactional()
-    async def delete(self, model: ModelType) -> bool:
+    async def delete(self, model: ModelType) -> ResponseMessage:
         """
         Deletes the Object from the DB.
 
@@ -105,7 +106,7 @@ class BaseController(Generic[ModelType]):
         :return: True if the object was deleted, False otherwise.
         """
         await self.repository.delete(model)
-        return True
+        return ResponseMessage(detail="Deleted successfully.")
 
     @staticmethod
     def extract_attributes_from_schema(

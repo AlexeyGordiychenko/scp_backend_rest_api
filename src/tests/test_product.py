@@ -140,7 +140,9 @@ async def test_delete_product(
     for product_payload in product_payloads:
         response_delete = await client.delete(f"product/{product_payload['id']}")
         assert response_delete.status_code == 200
-        assert response_delete.json() is True
+        response_delete_json = response_delete.json()
+        assert "detail" in response_delete_json
+        assert response_delete_json["detail"] == "Deleted successfully."
         assert (
             await utils.get_product_from_db(product_payload["id"], db_session) is None
         )

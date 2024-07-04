@@ -167,5 +167,7 @@ async def test_delete_client(
     for client_payload in client_payloads:
         response_delete = await client.delete(f"client/{client_payload['id']}")
         assert response_delete.status_code == 200
-        assert response_delete.json() is True
+        response_delete_json = response_delete.json()
+        assert "detail" in response_delete_json
+        assert response_delete_json["detail"] == "Deleted successfully."
         assert await utils.get_client_from_db(client_payload["id"], db_session) is None

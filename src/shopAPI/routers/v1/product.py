@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
@@ -108,7 +108,7 @@ async def update_product_stock_route(
     "/{id}",
     summary="Delete a product.",
     status_code=status.HTTP_200_OK,
-    response_model=bool,
+    response_model=Optional[ResponseMessage],
 )
 async def delete_product_route(id: UUID, controller: ProductController = Depends()):
     return await controller.delete(await controller.get_by_id(id=id))

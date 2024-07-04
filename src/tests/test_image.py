@@ -131,5 +131,7 @@ async def test_delete_image(
     for created_image in created_images:
         response_delete = await client.delete(f"image/{created_image.id}")
         assert response_delete.status_code == 200
-        assert response_delete.json() is True
+        response_delete_json = response_delete.json()
+        assert "detail" in response_delete_json
+        assert response_delete_json["detail"] == "Deleted successfully."
         assert await utils.get_image_from_db(created_image.id, db_session) is None

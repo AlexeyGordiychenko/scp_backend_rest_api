@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from fastapi import APIRouter, Depends, Query, status
 
@@ -75,7 +75,7 @@ async def update_client_route(
     "/{id}",
     summary="Delete a client.",
     status_code=status.HTTP_200_OK,
-    response_model=bool,
+    response_model=Optional[ResponseMessage],
 )
 async def delete_client_route(id: UUID, controller: ClientController = Depends()):
     return await controller.delete(await controller.get_by_id(id=id))
