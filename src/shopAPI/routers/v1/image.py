@@ -18,7 +18,7 @@ router = APIRouter(
 
 @router.post(
     "/",
-    summary="Create a new image's image.",
+    summary="Create a new product's image.",
     status_code=status.HTTP_201_CREATED,
     response_model=ImageResponseWithProductId,
     responses={400: {"model": ErrorMessage}, 404: {"model": ErrorMessage}},

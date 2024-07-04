@@ -87,7 +87,7 @@ async def get_product_images_route(
 
 @router.patch(
     "/{id}",
-    summary="Update product's stock.",
+    summary="Reduce product's stock.",
     status_code=status.HTTP_200_OK,
     response_model=ProductResponseWithSupplierId,
     responses={400: {"model": ErrorMessage}},
