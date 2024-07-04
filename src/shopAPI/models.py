@@ -48,7 +48,7 @@ class ApiStatus(SQLModel):
     )
 
 
-class ErrorMessage(SQLModel):
+class ResponseMessage(SQLModel):
     detail: str
 
 

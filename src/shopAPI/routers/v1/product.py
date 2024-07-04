@@ -7,7 +7,7 @@ from shopAPI.models import (
     ProductCreate,
     ProductResponseWithSupplierId,
     ProductUpdate,
-    ErrorMessage,
+    ResponseMessage,
     ProductUpdateStock,
 )
 from shopAPI.controllers import ImageController, ProductController
@@ -23,7 +23,7 @@ router = APIRouter(
     summary="Create a new product.",
     status_code=status.HTTP_201_CREATED,
     response_model=ProductResponseWithSupplierId,
-    responses={404: {"model": ErrorMessage}},
+    responses={404: {"model": ResponseMessage}},
 )
 async def create_product_route(
     data: ProductCreate, controller: ProductController = Depends()
@@ -51,7 +51,7 @@ async def get_products_all(
     summary="Get a product.",
     status_code=status.HTTP_200_OK,
     response_model=ProductResponseWithSupplierId,
-    responses={404: {"model": ErrorMessage}},
+    responses={404: {"model": ResponseMessage}},
 )
 async def get_product_route(id: UUID, controller: ProductController = Depends()):
     return await controller.get_by_id(id=id)
@@ -66,7 +66,7 @@ async def get_product_route(id: UUID, controller: ProductController = Depends())
             "content": {"application/octet-stream": {}},
             "description": "Return the zip archive with images of a product.",
         },
-        404: {"model": ErrorMessage},
+        404: {"model": ResponseMessage},
     },
 )
 async def get_product_images_route(
@@ -90,7 +90,7 @@ async def get_product_images_route(
     summary="Reduce product's stock.",
     status_code=status.HTTP_200_OK,
     response_model=ProductResponseWithSupplierId,
-    responses={400: {"model": ErrorMessage}},
+    responses={400: {"model": ResponseMessage}},
 )
 async def update_product_stock_route(
     id: UUID,

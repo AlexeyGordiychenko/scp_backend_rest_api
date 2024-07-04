@@ -6,7 +6,7 @@ from shopAPI.models import (
     ImageCreate,
     ImageResponseWithProductId,
     ImageUpdate,
-    ErrorMessage,
+    ResponseMessage,
 )
 from shopAPI.controllers import ImageController
 
@@ -21,7 +21,7 @@ router = APIRouter(
     summary="Create a new product's image.",
     status_code=status.HTTP_201_CREATED,
     response_model=ImageResponseWithProductId,
-    responses={400: {"model": ErrorMessage}, 404: {"model": ErrorMessage}},
+    responses={400: {"model": ResponseMessage}, 404: {"model": ResponseMessage}},
 )
 async def create_image_route(
     product_id: UUID,
@@ -48,7 +48,7 @@ async def create_image_route(
             "content": {"application/octet-stream": {}},
             "description": "Return the image file.",
         },
-        404: {"model": ErrorMessage},
+        404: {"model": ResponseMessage},
     },
 )
 async def get_image_route(id: UUID, controller: ImageController = Depends()):

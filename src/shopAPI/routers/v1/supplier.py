@@ -6,7 +6,7 @@ from shopAPI.models import (
     SupplierCreate,
     SupplierUpdate,
     SupplierResponseWithAddress,
-    ErrorMessage,
+    ResponseMessage,
 )
 from shopAPI.controllers import SupplierController
 
@@ -48,7 +48,7 @@ async def get_suppliers_all(
     summary="Get a supplier.",
     status_code=status.HTTP_200_OK,
     response_model=SupplierResponseWithAddress,
-    responses={404: {"model": ErrorMessage}},
+    responses={404: {"model": ResponseMessage}},
 )
 async def get_supplier_route(id: UUID, controller: SupplierController = Depends()):
     return await controller.get_by_id(id=id)
