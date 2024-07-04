@@ -78,6 +78,8 @@ class BaseRepository(Generic[ModelType]):
         :param field: The field to match.
         :param value: The value to match.
         :param join_: The joins to make.
+        :param unique: Whether to return a unique instance.
+        :param for_update: Whether to lock the record for update.
         :return: The model instance.
         """
         query = self._query(join_)
@@ -123,11 +125,21 @@ class BaseRepository(Generic[ModelType]):
         return query.all()
 
     async def _all_unique(self, query: Select) -> list[ModelType]:
+        """
+        Returns all unique results from the query
+
+        :param query: The query to execute.
+        :return: A list of unique model instances.
+        """
         result = await self.session.execute(query)
         return result.unique().scalars().all()
 
     async def _one_or_none(self, query: Select) -> ModelType | None:
-        """Returns the first result from the query or None."""
+        """Returns the first result from the query or None.
+
+        :param query: The query to execute.
+        :return: The model instance or None.
+        """
         query = await self.session.scalars(query)
         return query.one_or_none()
 
@@ -190,9 +202,9 @@ class ClientRepository(BaseRepository[Client]):
 
     def _join_address(self, query: Select) -> Select:
         """
-        Join address.
+        Joins address table.
 
-        :param query: Query.
+        :param query: The query to join.
         :return: Query.
         """
         return query.options(joinedload(Client.address)).execution_options(
@@ -219,9 +231,9 @@ class SupplierRepository(BaseRepository[Supplier]):
 
     def _join_address(self, query: Select) -> Select:
         """
-        Join address.
+        Joins address table.
 
-        :param query: Query.
+        :param query: The query to join.
         :return: Query.
         """
         return query.options(joinedload(Supplier.address)).execution_options(
@@ -246,9 +258,9 @@ class ProductRepository(BaseRepository[Product]):
 
     def _join_supplier(self, query: Select) -> Select:
         """
-        Join supplier.
+        Joins supplier table.
 
-        :param query: Query.
+        :param query: The query to join.
         :return: Query.
         """
         return query.options(joinedload(Product.supplier)).execution_options(
@@ -257,9 +269,9 @@ class ProductRepository(BaseRepository[Product]):
 
     def _join_images(self, query: Select) -> Select:
         """
-        Join images.
+        Joins images table.
 
-        :param query: Query.
+        :param query: The query to join.
         :return: Query.
         """
         return query.options(joinedload(Product.images)).execution_options(
