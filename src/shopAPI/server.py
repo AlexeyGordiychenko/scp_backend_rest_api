@@ -4,7 +4,7 @@ from shopAPI.routers import api_router, status_router
 from shopAPI.config import settings
 
 
-def get_application():
+def get_application() -> FastAPI:
     app = FastAPI(
         title=settings.PROJECT_NAME,
         version=settings.VERSION,

@@ -41,7 +41,7 @@ async def create_entities(
         assert client_payload == response_create_json
 
 
-async def get_client_from_db(id: str, db_session: AsyncSession):
+async def get_client_from_db(id: str, db_session: AsyncSession) -> Client:
     return (
         await db_session.scalars(
             select(Client).where(Client.id == id).options(joinedload(Client.address))
@@ -49,7 +49,9 @@ async def get_client_from_db(id: str, db_session: AsyncSession):
     ).one_or_none()
 
 
-async def compare_db_client_to_payload(client_payload: dict, db_session: AsyncSession):
+async def compare_db_client_to_payload(
+    client_payload: dict, db_session: AsyncSession
+) -> None:
     db_client = await get_client_from_db(client_payload["id"], db_session)
     assert db_client is not None
     assert (
@@ -58,7 +60,7 @@ async def compare_db_client_to_payload(client_payload: dict, db_session: AsyncSe
     )
 
 
-async def get_supplier_from_db(id: str, db_session: AsyncSession):
+async def get_supplier_from_db(id: str, db_session: AsyncSession) -> Supplier:
     return (
         await db_session.scalars(
             select(Supplier)
@@ -68,19 +70,19 @@ async def get_supplier_from_db(id: str, db_session: AsyncSession):
     ).one_or_none()
 
 
-async def get_product_from_db(id: str, db_session: AsyncSession):
+async def get_product_from_db(id: str, db_session: AsyncSession) -> Product:
     return (
         await db_session.scalars(select(Product).where(Product.id == id))
     ).one_or_none()
 
 
-async def get_image_from_db(id: str, db_session: AsyncSession):
+async def get_image_from_db(id: str, db_session: AsyncSession) -> Image:
     return (await db_session.scalars(select(Image).where(Image.id == id))).one_or_none()
 
 
 async def compare_db_supplier_to_payload(
     supplier_payload: dict, db_session: AsyncSession
-):
+) -> None:
     db_supplier = await get_supplier_from_db(supplier_payload["id"], db_session)
     assert db_supplier is not None
     assert (
@@ -91,7 +93,7 @@ async def compare_db_supplier_to_payload(
 
 async def compare_db_product_to_payload(
     product_payload: dict, db_session: AsyncSession
-):
+) -> None:
     db_product = await get_product_from_db(product_payload["id"], db_session)
     assert db_product is not None
     assert (
@@ -100,7 +102,7 @@ async def compare_db_product_to_payload(
     )
 
 
-async def check_422_error(response: Response, field: str):
+async def check_422_error(response: Response, field: str) -> None:
     assert response.status_code == 422
     response_json = response.json()
     assert "detail" in response_json
@@ -113,7 +115,7 @@ async def check_422_error(response: Response, field: str):
 
 async def create_products(
     client: AsyncClient, supplier_payloads: List[dict], product_payloads: List[dict]
-):
+) -> None:
     await create_entities(client, "supplier", supplier_payloads)
     for supplier_payload, product_payload in zip_longest(
         supplier_payloads, product_payloads, fillvalue=supplier_payloads[0]
@@ -124,7 +126,7 @@ async def create_products(
 
 async def compare_db_image_to_payload(
     image_payload: ImageResponseFull, db_session: AsyncSession
-):
+) -> None:
     db_image = await get_image_from_db(image_payload.id, db_session)
     assert db_image is not None
     assert db_image.model_dump() == image_payload.model_dump()
@@ -135,7 +137,7 @@ async def create_images(
     supplier_payloads: List[dict],
     product_payloads: List[dict],
     image_payloads: List[dict],
-):
+) -> List[ImageResponseFull]:
     await create_products(client, supplier_payloads, product_payloads)
     created_images = []
     for image_payload in image_payloads:

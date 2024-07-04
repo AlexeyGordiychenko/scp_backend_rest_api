@@ -27,7 +27,7 @@ router = APIRouter(
 )
 async def create_product_route(
     data: ProductCreate, controller: ProductController = Depends()
-):
+) -> ProductResponseWithSupplierId:
     return await controller.create(data)
 
 
@@ -42,7 +42,7 @@ async def get_products_all(
     offset: int = Query(0, ge=0, description="Offset for pagination."),
     limit: int = Query(100, gt=0, le=100, description="Number of items to return."),
     controller: ProductController = Depends(),
-):
+) -> List[ProductResponseWithSupplierId]:
     return await controller.get_all(name=name, offset=offset, limit=limit)
 
 
@@ -53,7 +53,9 @@ async def get_products_all(
     response_model=ProductResponseWithSupplierId,
     responses={404: {"model": ResponseMessage}},
 )
-async def get_product_route(id: UUID, controller: ProductController = Depends()):
+async def get_product_route(
+    id: UUID, controller: ProductController = Depends()
+) -> ProductResponseWithSupplierId:
     return await controller.get_by_id(id=id)
 
 
@@ -74,7 +76,7 @@ async def get_product_images_route(
     offset: int = Query(0, ge=0, description="Offset for images pagination."),
     limit: int = Query(5, gt=0, le=5, description="Number of images to return."),
     controller: ImageController = Depends(),
-):
+) -> StreamingResponse:
     filename, images = await controller.get_all_images_by_product_id(
         product_id=id, offset=offset, limit=limit
     )
@@ -96,7 +98,7 @@ async def update_product_stock_route(
     id: UUID,
     data: ProductUpdateStock,
     controller: ProductController = Depends(),
-):
+) -> ProductResponseWithSupplierId:
     obj = await controller.get_by_id(id=id, for_update=True)
     new_stock = obj.available_stock - data.amount_to_reduce
     if new_stock < 0:
@@ -110,5 +112,7 @@ async def update_product_stock_route(
     status_code=status.HTTP_200_OK,
     response_model=Optional[ResponseMessage],
 )
-async def delete_product_route(id: UUID, controller: ProductController = Depends()):
+async def delete_product_route(
+    id: UUID, controller: ProductController = Depends()
+) -> Optional[ResponseMessage]:
     return await controller.delete(await controller.get_by_id(id=id))

@@ -1,5 +1,5 @@
 import io
-from typing import Any, Generic, List, Type, TypeVar
+from typing import Any, Generic, List, Tuple, Type, TypeVar
 from uuid import UUID
 import zipfile
 from fastapi import Depends, HTTPException
@@ -206,7 +206,7 @@ class ImageController(BaseController[Image]):
 
     async def get_all_images_by_product_id(
         self, product_id: UUID, offset: int, limit: int
-    ) -> List[ModelType]:
+    ) -> Tuple[str, bytes]:
         await self.product.get_by_id(product_id)
         db_objs = await self.repository.get_all(
             product_id=product_id, offset=offset, limit=limit

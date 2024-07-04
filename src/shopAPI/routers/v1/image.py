@@ -28,7 +28,7 @@ async def create_image_route(
     product_id: UUID,
     image: UploadFile = File(...),
     controller: ImageController = Depends(),
-):
+) -> ImageResponseWithProductId:
     if not image.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Invalid image")
     return await controller.create(
@@ -52,7 +52,9 @@ async def create_image_route(
         404: {"model": ResponseMessage},
     },
 )
-async def get_image_route(id: UUID, controller: ImageController = Depends()):
+async def get_image_route(
+    id: UUID, controller: ImageController = Depends()
+) -> StreamingResponse:
     image = await controller.get_by_id(id=id)
     return StreamingResponse(
         (image.image,),
@@ -71,7 +73,7 @@ async def update_supplier_route(
     id: UUID,
     image: UploadFile = File(...),
     controller: ImageController = Depends(),
-):
+) -> ImageResponseWithProductId:
     if not image.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Invalid image")
 
@@ -89,5 +91,7 @@ async def update_supplier_route(
     status_code=status.HTTP_200_OK,
     response_model=Optional[ResponseMessage],
 )
-async def delete_image_route(id: UUID, controller: ImageController = Depends()):
+async def delete_image_route(
+    id: UUID, controller: ImageController = Depends()
+) -> Optional[ResponseMessage]:
     return await controller.delete(await controller.get_by_id(id=id))

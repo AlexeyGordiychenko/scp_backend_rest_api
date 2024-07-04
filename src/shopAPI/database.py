@@ -1,7 +1,7 @@
 from asyncio import current_task
 from datetime import datetime
 from functools import wraps
-from typing import Union
+from typing import AsyncGenerator, Union
 from uuid import UUID
 from uuid_extensions import uuid7
 
@@ -74,7 +74,7 @@ engine = create_async_engine(
 session = prepare_session(engine)
 
 
-async def get_session():
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Get the database session.
     This can be used for dependency injection.

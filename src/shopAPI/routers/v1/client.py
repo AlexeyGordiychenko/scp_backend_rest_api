@@ -24,7 +24,7 @@ router = APIRouter(
 )
 async def create_client_route(
     data: ClientCreate, controller: ClientController = Depends()
-):
+) -> ClientResponseWithAddress:
     return await controller.create(data)
 
 
@@ -40,7 +40,7 @@ async def get_clients_all(
     offset: int = Query(0, ge=0, description="Offset for pagination."),
     limit: int = Query(100, gt=0, le=100, description="Number of items to return."),
     controller: ClientController = Depends(),
-):
+) -> List[ClientResponseWithAddress]:
     return await controller.get_all(
         name=name, surname=surname, offset=offset, limit=limit
     )
@@ -53,7 +53,9 @@ async def get_clients_all(
     response_model=ClientResponseWithAddress,
     responses={404: {"model": ResponseMessage}},
 )
-async def get_client_route(id: UUID, controller: ClientController = Depends()):
+async def get_client_route(
+    id: UUID, controller: ClientController = Depends()
+) -> ClientResponseWithAddress:
     return await controller.get_by_id(id=id)
 
 
@@ -67,7 +69,7 @@ async def update_client_route(
     id: UUID,
     data: ClientUpdate,
     controller: ClientController = Depends(),
-):
+) -> ClientResponseWithAddress:
     return await controller.update(await controller.get_by_id(id=id), data)
 
 
@@ -77,5 +79,7 @@ async def update_client_route(
     status_code=status.HTTP_200_OK,
     response_model=Optional[ResponseMessage],
 )
-async def delete_client_route(id: UUID, controller: ClientController = Depends()):
+async def delete_client_route(
+    id: UUID, controller: ClientController = Depends()
+) -> Optional[ResponseMessage]:
     return await controller.delete(await controller.get_by_id(id=id))
