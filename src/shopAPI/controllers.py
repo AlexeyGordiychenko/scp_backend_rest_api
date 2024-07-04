@@ -12,7 +12,6 @@ from shopAPI.models import (
     Client,
     Image,
     Product,
-    ProductUpdateStock,
     ResponseMessage,
     Supplier,
 )

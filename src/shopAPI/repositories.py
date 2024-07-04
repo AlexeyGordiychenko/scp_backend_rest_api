@@ -1,7 +1,7 @@
 from functools import reduce
 from typing import Any, Generic, List, Type, TypeVar
 from uuid import UUID
-from sqlalchemy import Select, func
+from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select
 from sqlalchemy.orm import joinedload
