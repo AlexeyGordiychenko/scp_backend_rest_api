@@ -25,6 +25,10 @@ test:
 test-build:
 	docker compose --profile test build
 
+env-files:
+	echo "DB_PORT=5433\nDB_PASSWORD=postgres" > .env
+	echo "DB_PASSWORD=postgres" > .env_test
+
 generate-migration:
 	@read -p "Enter migration message: " message; \
 	alembic revision --autogenerate -m "$$message"
