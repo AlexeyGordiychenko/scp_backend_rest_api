@@ -36,14 +36,14 @@ services:
     profiles: ["dev"]
     <<: *app-base
     entrypoint: ["scripts/start-dev.sh"]
+    build:
+      target: app
     env_file: ".env"
     environment:
       - DB_HOST=postgres-dev
     volumes:
       - ./shopAPI/:/shopAPI/shopAPI
-      - ./alembic/:/shopAPI/alembic
-      - ./scripts/:/shopAPI/scripts
-      - ./main.py:/shopAPI/main.py
+      - /shopAPI/shopAPI/htmlcov
     ports:
       - ${APP_PORT:-8000}:${APP_PORT:-8000}
     expose:
@@ -70,13 +70,10 @@ services:
     build:
       args:
         ENV: test
+      target: test
     env_file: ".env_test"
     volumes:
-      - ./shopAPI/:/shopAPI/shopAPI
-      - ./alembic/:/shopAPI/alembic
-      - ./scripts/:/shopAPI/scripts
-      - ./tests/:/shopAPI/tests
-      - ./pytest.ini:/shopAPI/pytest.ini
+      - ./shopAPI/htmlcov:/shopAPI/shopAPI/htmlcov
     environment:
       - DB_HOST=postgres-test
     depends_on:
