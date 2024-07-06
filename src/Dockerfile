@@ -20,21 +20,14 @@ COPY --from=builder /usr/local /usr/local
 
 ENV PATH=/usr/local/bin:$PATH
 
-RUN useradd -m appuser
-USER appuser
-
-WORKDIR /shopAPI
-
 COPY shopAPI/ /shopAPI/shopAPI/
 COPY alembic/ /shopAPI/alembic/
 COPY scripts/ /shopAPI/scripts/
 COPY alembic.ini main.py /shopAPI/
 
+WORKDIR /shopAPI
+
 FROM app AS test
 
 COPY tests/ /shopAPI/tests/
 COPY pytest.ini /shopAPI/
-
-RUN mkdir -p /shopAPI/htmlcov; \
-    chown -R appuser:appuser /shopAPI/htmlcov; \
-    chmod 755 /shopAPI/htmlcov; \
