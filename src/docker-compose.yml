@@ -43,7 +43,6 @@ services:
       - DB_HOST=postgres-dev
     volumes:
       - ./shopAPI/:/shopAPI/shopAPI
-      - /shopAPI/shopAPI/htmlcov
     ports:
       - ${APP_PORT:-8000}:${APP_PORT:-8000}
     expose:
@@ -73,7 +72,7 @@ services:
       target: test
     env_file: ".env_test"
     volumes:
-      - ./shopAPI/htmlcov:/shopAPI/shopAPI/htmlcov
+      - ./tests/htmlcov:/shopAPI/tests/htmlcov
     environment:
       - DB_HOST=postgres-test
     depends_on:
