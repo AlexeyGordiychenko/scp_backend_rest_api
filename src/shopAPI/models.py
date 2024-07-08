@@ -132,7 +132,7 @@ class ClientResponseWithAddress(ClientResponse):
 
 
 class SupplierBase(SQLModel):
-    name: str = Field(nullable=False, **field_example("Coca-Cola"))
+    name: str = Field(nullable=False, **field_example("Sony"))
     phone_number: PhoneNumber = Field(nullable=False, **field_example("+12124567890"))
 
     model_config = ConfigDict(extra="forbid")
@@ -165,7 +165,7 @@ class SupplierCreate(SupplierBase):
 
 
 class SupplierUpdate(SupplierBase):
-    name: Optional[str] = Field(None, **field_example("Pepsi"))
+    name: Optional[str] = Field(None, **field_example("Toshiba"))
     phone_number: Optional[PhoneNumber] = Field(None, **field_example("+12124560987"))
     address: Optional[AddressUpdate] = None
 
@@ -179,9 +179,9 @@ class SupplierResponseWithAddress(SupplierResponse):
 
 
 class ProductBase(SQLModel):
-    name: str = Field(nullable=False, **field_example("Diet Coke"))
-    category: str = Field(nullable=False, **field_example("Drinks"))
-    price: float = Field(nullable=False, **field_example(1.99))
+    name: str = Field(nullable=False, **field_example("Vacuum Cleaner"))
+    category: str = Field(nullable=False, **field_example("Appliances"))
+    price: float = Field(nullable=False, **field_example(59.99))
     available_stock: int = Field(nullable=False, **field_example(100))
     last_update_date: date = Field(nullable=False)
 
