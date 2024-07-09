@@ -19,7 +19,6 @@ clear:
 
 test:
 	docker compose run --rm -T app-test || true
-	docker compose exec postgres-test psql -U postgres -c "SELECT * FROM client;SELECT * FROM supplier;SELECT * FROM product;SELECT * FROM address;SELECT id, product_id, extension FROM image;"
 	docker compose --profile test down
 
 test-build:
