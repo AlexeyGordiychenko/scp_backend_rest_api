@@ -1,4 +1,13 @@
-# REST API
+# Backend Project 2: REST API (Individual project)
+
+The REST API was developed in Python 3.11 using FastAPI, SQLModel and PostgreSQL. Repository pattern was imlemented to access the database.
+To run the API please refer to [README.md](src/README.md)
+
+## Score:
+
+The final score is 100% (max)
+
+## Task
 
 ### ShopAPI
 So, you've decided to open your own store. There's no money for a custom website, so you decided to write everything yourself. A properly written backend will allow you to make a website, desktop, and even mobile applications later. And all of them will receive data from our REST API. Don't forget about foreign keys. Learn the difference between DAL (Data Access Layer) and DTL (Data Transfer Layer) objects.
