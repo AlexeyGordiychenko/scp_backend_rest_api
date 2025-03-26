@@ -1,7 +1,18 @@
 # Backend Project 2: REST API (Individual project)
 
-The REST API was developed in Python 3.11 using FastAPI, SQLModel and PostgreSQL. Repository pattern was imlemented to access the database.
+The API allows you to create, read, update and delete clients, suppliers, products and their images.
+
 To run the API please refer to [README.md](src/README.md)
+
+## Technology Stack
+
+- ⚡ [**FastAPI**](https://fastapi.tiangolo.com) for the Python backend API.
+    - 🧰 [SQLModel](https://sqlmodel.tiangolo.com) for the Python SQL database interactions (ORM).
+    - 🔍 [Pydantic](https://docs.pydantic.dev), used by FastAPI, for the data validation and settings management.
+    - 💾 [PostgreSQL](https://www.postgresql.org) as the SQL database.
+- 📦 [Repository pattern](https://www.cosmicpython.com/book/chapter_02_repository.html) - abstraction over data storage
+- 🐋 [Docker Compose](https://www.docker.com) for development and production.
+- ✅ Tests with [Pytest](https://pytest.org).
 
 ## Score:
 
